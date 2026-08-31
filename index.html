@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบทำข้อสอบพยาธิวิทยา (Pathology Exam Platform)</title>
+    <title>ระบบทำข้อสอบพยาธิวิทยา (100 ข้อ)</title>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -56,46 +56,11 @@
         }
 
         .container {
-            max-width: 900px;
+            max-width: 920px;
             margin: -15px auto 0;
             padding: 0 15px;
         }
 
-        /* Selector Bar */
-        .set-selector-bar {
-            background: white;
-            padding: 12px;
-            border-radius: var(--radius);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-bottom: 15px;
-            border: 1px solid var(--border);
-        }
-
-        .set-btn {
-            background: var(--bg);
-            border: 1.5px solid var(--border);
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: var(--text-main);
-            flex: 1;
-            text-align: center;
-        }
-
-        .set-btn.active {
-            background: var(--primary);
-            color: white;
-            border-color: var(--primary);
-            box-shadow: 0 4px 10px rgba(2, 132, 199, 0.3);
-        }
-
-        /* Sticky Stats */
         .dashboard-sticky {
             position: sticky;
             top: 15px;
@@ -152,6 +117,35 @@
             background: linear-gradient(90deg, #0284c7, #10b981);
             width: 0%;
             transition: width 0.3s ease;
+        }
+
+        .chapter-filter {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 5px 0 15px;
+            scrollbar-width: none;
+        }
+        .chapter-filter::-webkit-scrollbar { display: none; }
+
+        .filter-btn {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-sub);
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            font-weight: 600;
         }
 
         .question-card {
@@ -254,7 +248,7 @@
         .summary-wrapper {
             display: none;
             background: var(--card);
-            padding: 35px 25px;
+            padding: 30px 20px;
             border-radius: var(--radius);
             text-align: center;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
@@ -262,28 +256,11 @@
             border: 1px solid var(--border);
         }
 
-        .summary-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .summary-box {
-            padding: 15px;
-            border-radius: 8px;
-            background: #f8fafc;
-            border: 1px solid var(--border);
-        }
-
-        .summary-box.correct { border-color: var(--success); color: var(--success); }
-        .summary-box.wrong { border-color: var(--danger); color: var(--danger); }
-        .summary-box.total { border-color: var(--primary); color: var(--primary); }
-
-        .summary-box .val {
-            font-size: 26px;
+        .summary-score {
+            font-size: 40px;
             font-weight: 800;
-            margin-top: 5px;
+            color: var(--primary);
+            margin: 10px 0;
         }
 
         .action-btn {
@@ -307,26 +284,19 @@
 <body>
 
 <div class="header">
-    <h1>Pathology Practice Examination</h1>
-    <p>ระบบสุ่มสลับตัวเลือกอัตโนมัติทุกครั้งที่เริ่มทำใหม่ | แยกวิเคราะห์ผลคะแนนรายชุด</p>
+    <h1>Pathology Practice Examination (100 ข้อ)</h1>
+    <p>อิงตามแนวข้อสอบ 60 ข้อแรก และเพิ่มข้อสอบตามสไลด์เรียนครบ 100 ข้อ</p>
 </div>
 
 <div class="container">
-    <!-- Set Selection Tabs -->
-    <div class="set-selector-bar">
-        <button class="set-btn active" id="btn-set-2" onclick="switchSet('set2')">⭐ ชุดที่ 2: เจาะตามแนวข้อสอบจริง (60 ข้อ)</button>
-        <button class="set-btn" id="btn-set-1" onclick="switchSet('set1')">ชุดที่ 1: คลังข้อสอบตามบทเรียน (100 ข้อ)</button>
-    </div>
-
-    <!-- Sticky Stats -->
     <div class="dashboard-sticky">
         <div class="stat-group">
             <div class="stat-item">
                 <span class="stat-label">ทำแล้ว</span>
-                <span class="stat-value"><span id="ans-count">0</span> / <span id="total-q-count">60</span></span>
+                <span class="stat-value"><span id="ans-count">0</span> / 100</span>
             </div>
             <div class="stat-item">
-                <span class="stat-label">คะแนนปัจจุบัน</span>
+                <span class="stat-label">คะแนนรวม</span>
                 <span class="stat-value score" id="score-count">0</span>
             </div>
         </div>
@@ -337,219 +307,1278 @@
         </div>
     </div>
 
-    <!-- Question Container -->
+    <div class="chapter-filter">
+        <button class="filter-btn active" onclick="filterChapter('all', this)">ทั้งหมด (100 ข้อ)</button>
+        <button class="filter-btn" onclick="filterChapter('core', this)">แนวข้อสอบหลัก (ข้อ 1-60)</button>
+        <button class="filter-btn" onclick="filterChapter('ch1', this)">1. บทนำและเทคนิคพยาธิวิทยา</button>
+        <button class="filter-btn" onclick="filterChapter('ch2', this)">2. การอักเสบ (Inflammation)</button>
+        <button class="filter-btn" onclick="filterChapter('ch3', this)">3. Hemodynamics</button>
+        <button class="filter-btn" onclick="filterChapter('ch4', this)">4. Cell Injury & Death</button>
+        <button class="filter-btn" onclick="filterChapter('ch5', this)">5. Neoplasia & มะเร็ง</button>
+        <button class="filter-btn" onclick="filterChapter('ch6', this)">6. สิ่งแวดล้อมและโภชนาการ</button>
+        <button class="filter-btn" onclick="filterChapter('ch7', this)">7. ภูมิคุ้มกัน & โรคติดเชื้อ</button>
+    </div>
+
     <div id="questions-list"></div>
 
-    <button class="action-btn" id="finish-btn" style="width: 100%;" onclick="submitExam()">ส่งข้อสอบและสรุปผลคะแนน</button>
+    <button class="action-btn" id="finish-btn" style="width: 100%;" onclick="submitExam()">ส่งข้อสอบและสรุปผลคะแนนทั้งหมด</button>
 
-    <!-- Summary Box -->
     <div id="summary-card" class="summary-wrapper">
-        <h2 id="summary-title">🎉 สรุปผลการทดสอบ</h2>
-        
-        <div class="summary-grid">
-            <div class="summary-box correct">
-                <div>ตอบถูก</div>
-                <div class="val" id="sum-correct">0</div>
-            </div>
-            <div class="summary-box wrong">
-                <div>ตอบผิด</div>
-                <div class="val" id="sum-wrong">0</div>
-            </div>
-            <div class="summary-box total">
-                <div>คะแนนรวม</div>
-                <div class="val" id="sum-total">0%</div>
-            </div>
-        </div>
-
-        <p id="feedback-text" style="color: var(--text-sub); margin-bottom: 15px; font-size: 14px;"></p>
-        <button class="action-btn" onclick="restartCurrentSet()">สลับช้อยส์ & ทำชุดนี้ใหม่อีกครั้ง</button>
+        <h2>🎉 สรุปผลการทดสอบ</h2>
+        <div class="summary-score" id="score-percent">0 / 100</div>
+        <p id="feedback-text" style="color: var(--text-sub); margin-bottom: 15px;"></p>
+        <button class="action-btn" onclick="location.reload()">ทำแบบทดสอบใหม่อีกครั้ง</button>
     </div>
 </div>
 
 <script>
-// ==========================================
-// 1. ฐานข้อมูลชุดที่ 2 (เจาะตรงแนว 60 ข้อเป๊ะ)
-// ==========================================
-const rawSet2 = [
-    { chName: "บทนำพยาธิวิทยา", q: "1. ข้อใดจับคู่คำจำกัดความพื้นฐานทางพยาธิวิทยาได้ถูกต้อง", options: ["Pathology - ศึกษาการทำงานตามปกติของร่างกาย", "Etiology - ศึกษาสาเหตุของการเกิดโรคหรือการบาดเจ็บ", "Pathogenesis - ศึกษาการเปลี่ยนแปลงโครงสร้างด้วยตาเปล่า", "Homeostasis - ภาวะที่เซลล์ไม่สามารถปรับตัวได้จนเกิดเนื้อตาย"], correctIndex: 1, exp: "Etiology คือการศึกษาสาเหตุของโรค ส่วน Pathology คือการศึกษาความผิดปกติของโครงสร้างเซลล์/เนื้อเยื่อ, Pathogenesis คือกลไกการเกิดโรคทีละขั้นตอน และ Homeostasis คือภาวะธำรงดุล" },
-    { chName: "บทนำพยาธิวิทยา", q: "2. ผู้ป่วยโรคตับแข็ง (Liver cirrhosis) หากนำชิ้นเนื้อตับไปย้อมพิเศษเพื่อดูพังผืด (Fibrosis) ต้องใช้สีใดและให้ผลอย่างไร", options: ["ย้อม Prussian Blue ได้ผลเป็นตะกอนสีน้ำเงินของไขมัน", "ย้อม Masson's Trichrome พบเนื้อเยื่อพังผืด (Fibrous septa) ติดสีน้ำเงิน ล้อมรอบ Regenerative nodules", "ย้อม Oil Red O พบพังผืดติดสีชมพูใส", "ย้อม Hematoxylin อย่างเดียวพบเซลล์ตับติดสีเขียว"], correctIndex: 1, exp: "Masson's Trichrome เป็นสีพิเศษที่ย้อมคอลลาเจน/พังผืดติดสีน้ำเงิน ซึ่งจะเห็นเป็นแถบ Fibrous septa สีน้ำเงินคั่นรอบก้อนเซลล์ตับ (Nodules) สีแดงอย่างชัดเจนในตับแข็ง" },
-    { chName: "บทนำพยาธิวิทยา", q: "3. ในการเตรียมชิ้นเนื้อเพื่อฝังในพาราฟินบล็อก (Tissue processing) มีลำดับขั้นตอนที่ถูกต้องตามข้อใด", options: ["Fixation → Clearing → Dehydration → Infiltration → Embedding", "Fixation → Dehydration → Clearing → Infiltration → Embedding", "Embedding → Sectioning → Clearing → Staining → Mounting", "Dehydration → Fixation → Infiltration → Clearing → Sectioning"], correctIndex: 1, exp: "ลำดับการเตรียมชิ้นเนื้อมาตรฐานคือ: 1. Fixation (คงสภาพ) → 2. Dehydration (ไล่น้ำด้วยแอลกอฮอล์) → 3. Clearing (ทำให้ใสด้วยไซลีน) → 4. Infiltration (แทรกซึมพาราฟิน 52-60°C) → 5. Embedding (หล่อบล็อก)" },
-    { chName: "บทนำพยาธิวิทยา", q: "4. ขั้นตอนการตัดชิ้นเนื้อ (Sectioning) เพื่อนำไปย้อมสีสไลด์ถาวร นิยมตัดด้วยเครื่องมือใดและมีความหนาเท่าใด", options: ["ตัดด้วยมีดผ่าตัด ความหนา 1-2 มิลลิเมตร", "ตัดด้วยเครื่อง Microtome ความหนาประมาณ 3-5 ไมโครเมตร", "ตัดด้วยเครื่อง Cryostat ความหนา 50 ไมโครเมตร", "ตัดด้วยเครื่องเลเซอร์ ความหนา 100 ไมโครเมตร"], correctIndex: 1, exp: "การตัดชิ้นเนื้อมาตรฐานทางพยาธิวิทยาใช้เครื่อง Rotary Microtome ตัดชิ้นเนื้อที่ฝังในพาราฟินบล็อกให้มีความหนา 3-5 ไมโครเมตร" },
-    { chName: "บทนำพยาธิวิทยา", q: "5. ข้อใดกล่าวถึงการตรวจชิ้นเนื้อด้วยเทคนิคแช่แข็งด่วน (Frozen section) ได้ถูกต้อง", options: ["ต้องนำชิ้นเนื้อไปแช่ฟอร์มาลิน 24 ชั่วโมงก่อนตัด", "เป็นการเตรียมชิ้นเนื้ออย่างรวดเร็วเพื่อการวินิจฉัยระหว่างการผ่าตัด (Intraoperative consultation)", "ต้องฝังชิ้นเนื้อในพาราฟินเหลวที่อุณหภูมิ 60°C", "ไม่สามารถใช้เครื่องตรวจดูเซลล์ได้"], correctIndex: 1, exp: "Frozen section ทำโดยนำชิ้นเนื้อสดมาแช่แข็งในเครื่อง Cryostat เพื่อตัดและย้อมสีทันที ช่วยให้ศัลยแพทย์ทราบผลการวินิจฉัยขณะผู้ป่วยยังอยู่ในห้องผ่าตัด" },
-    { chName: "บทนำพยาธิวิทยา", q: "6. การตรวจโปรตีนหรือแอนติเจนที่จำเพาะ เช่น PSA ในเนื้อเยื่อต่อมลูกหมาก อาศัยเทคนิคในข้อใด", options: ["Immunohistochemistry (IHC) โดยอาศัยแอนติบอดีจับจำเพาะกับแอนติเจน", "Masson's Trichrome staining", "Acid-fast bacilli staining", "Oil Red O staining"], correctIndex: 0, exp: "Immunohistochemistry (IHC) เป็นเทคนิคที่ใช้แอนติบอดีจำเพาะเข้าจับกับโปรตีนเป้าหมาย เช่น PSA เพื่อตรวจหาการแสดงออกของเซลล์ในต่อมลูกหมาก" },
-    { chName: "บทนำพยาธิวิทยา", q: "7. ผู้ป่วยมีอาการกล้ามเนื้ออ่อนแรงจากโรค Myasthenia gravis มีพยาธิกำเนิดระดับโมเลกุลเกิดจากอะไร", options: ["การสร้าง Autoantibody ไปขัดขวางและทำลาย Acetylcholine receptor ที่รอยต่อประสาทและกล้ามเนื้อ", "ขาดเอนไซม์ย่อยไขมันในเซลล์กล้ามเนื้อ", "การสะสมของคราบเคราตินในหลอดเลือด", "เซลล์กล้ามเนื้อหัวใจฝ่อลีบจากพันธุกรรม"], correctIndex: 0, exp: "Myasthenia gravis เกิดจากระบบภูมิคุ้มกันสร้าง Autoantibodies ต่อ Acetylcholine receptors บริเวณ Neuromuscular junction ส่งผลให้การส่งสัญญาณประสาทล้มเหลวและกล้ามเนื้ออ่อนแรง" },
-    { chName: "บทนำพยาธิวิทยา", q: "8. ผู้ป่วยมีไข้ ปวดศีรษะ สงสัยติดเชื้อในระบบประสาท ย้อมสารเรืองแสงพบแสงสีเขียวสว่างใต้กล้องฟลูออเรสเซนส์ เทคนิคนี้คือข้อใด", options: ["Immunofluorescence (IFA) โดยใช้สารเรืองแสง FITC ติดฉลากบนแอนติบอดี", "การย้อมสี Hematoxylin and Eosin", "การทำ Laser Ablation ICP-MS", "การตรวจนับเม็ดเลือดสมบูรณ์ (CBC)"], correctIndex: 0, exp: "Immunofluorescence (IFA) ใช้แอนติบอดีติดฉลากสารเรืองแสง FITC ซึ่งจะเปล่งแสงสีเขียวสว่างเมื่อจับกับเชื้อก่อโรค เช่น ในการตรวจไวรัสพิษสุนัขบ้า (RFFIT)" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "9. ทฤษฎีภูมิคุ้มกัน: Innate immunity แตกต่างจาก Adaptive immunity ในข้อใด", options: ["Innate immunity ตอบสนองช้าและมีความจำจำเพาะ", "Innate immunity ตอบสนองทันที ไม่จำเพาะ และไม่มีหน่วยความจำ ส่วน Adaptive มีความจำเพาะและอาศัย T/B cells", "Adaptive immunity ประกอบด้วยเซลล์ Neutrophil และด่านผิวหนังเท่านั้น", "Innate immunity ต้องอาศัยการสร้างแอนติบอดีเสมอ"], correctIndex: 1, exp: "Innate immunity คือภูมิคุ้มกันด่านแรก ตอบสนองรวดเร็ว ไม่จำเพาะเจาะจง ส่วน Adaptive immunity มีความจำเพาะสูง สร้างหน่วยความจำ และอาศัยการทำงานของ T และ B lymphocytes" },
-    { chName: "บทนำพยาธิวิทยา", q: "10. ผู้ป่วยโรคอ้วนและดื่มสุราเป็นประจำ สงสัยภาวะไขมันสะสมในเซลล์ตับ (Steatosis) ควรย้อมชิ้นเนื้อแช่แข็งด้วยวิธีใด", options: ["ย้อม Prussian Blue ได้สีน้ำเงิน", "ย้อม Oil Red O (ORO) ตรวจพบหยดไขมันติดสีแดงสดภายในเซลล์", "ย้อม Gram stain ได้สีม่วง", "ย้อม Pap smear"], correctIndex: 1, exp: "Oil Red O ละลายได้ดีในไขมัน จึงใช้ย้อมหยดไขมัน (Triglycerides/Lipids) ในเซลล์ตับจากชิ้นเนื้อสดหรือแช่แข็งให้เห็นเป็นสีแดงสด" },
-    { chName: "บทนำพยาธิวิทยา", q: "11. การตรวจชิ้นเนื้อก้อนมะเร็งเต้านมเพื่อหาโปรตีน HER2 เพื่อวางแผนการรักษา นิยมใช้เทคนิคใด", options: ["Masson's Trichrome", "Immunohistochemistry (IHC)", "Acid Fast Stain", "CBC Analysis"], correctIndex: 1, exp: "Immunohistochemistry (IHC) เป็นวิธีมาตรฐานที่ใช้ตรวจวัดระดับการแสดงออกของโปรตีน HER2 receptor บนผิวเซลล์มะเร็งเต้านม" },
-    { chName: "สิ่งแวดล้อมและโภชนาการ", q: "12. ผู้ป่วยสูบบุหรี่จัดมานาน เยื่อบุหลอดลมเปลี่ยนจาก Pseudostratified ciliated columnar เป็น Stratified squamous จัดเป็นพยาธิสภาพใด", options: ["Dysplasia", "Squamous metaplasia", "Hypertrophy", "Atrophy"], correctIndex: 1, exp: "Squamous metaplasia ในหลอดลมของผู้สูบบุหรี่เป็นการปรับเปลี่ยนชนิดของเซลล์เยื่อบุผิวเพื่อให้ทนทานต่อสารระคายเคืองในควันบุหรี่ได้ดียิ่งขึ้น" },
-    { chName: "Cell Injury & Death", q: "13. ข้อใดจัดเป็นการบาดเจ็บของเซลล์ที่ 'สามารถกลับคืนสู่ภาวะปกติได้' (Reversible cell injury)", options: ["การเกิดพังผืด (Fibrosis) และตับแข็ง", "เซลล์บวมน้ำ (Cellular swelling) และการสะสมไขมัน (Fatty change)", "การละลายนิวเคลียส (Karyolysis)", "การแตกสลายของเยื่อหุ้มเซลล์ในเนื้อตาย"], correctIndex: 1, exp: "Cellular swelling (จากการทำงานของ Na/K pump ลดลงชั่วคราว) และ Fatty change จัดเป็นการบาดเจ็บระยะแรกที่สามารถฟื้นตัวกลับมาเป็นปกติได้หากหมดสิ่งกระตุ้น" },
-    { chName: "Cell Injury & Death", q: "14. การปรับตัวของเซลล์ (Cellular adaptation) โดยการ 'เพิ่มขนาดของเซลล์' ส่งผลให้อวัยวะโตขึ้น เรียกว่าอะไร", options: ["Hyperplasia", "Hypertrophy", "Atrophy", "Metaplasia"], correctIndex: 1, exp: "Hypertrophy คือการเพิ่ม 'ขนาด' ของเซลล์ เช่น กล้ามเนื้อหัวใจหนาตัวขึ้นในคนเป็นความดันโลหิตสูง" },
-    { chName: "Cell Injury & Death", q: "15. การปรับตัวของเซลล์ในข้อใดที่ส่งผลให้ 'จำนวนของเซลล์เพิ่มขึ้น' (Increased cell number)", options: ["Hypertrophy", "Hyperplasia", "Atrophy", "Dysplasia"], correctIndex: 1, exp: "Hyperplasia คือการเพิ่ม 'จำนวน' เซลล์ เช่น การหนาตัวของเยื่อบุโพรงมดลูกจากการกระตุ้นของฮอร์โมน" },
-    { chName: "Cell Injury & Death", q: "16. หลังผู้ป่วยถูกตัดไตออกไปหนึ่งข้าง ไตข้างที่เหลือจะขยายขนาดขึ้นเพื่อทำหน้าที่ชดเชย จัดเป็นการปรับตัวแบบใด", options: ["Compensatory hyperplasia และ hypertrophy", "Pathologic atrophy", "Dysplasia", "Squamous metaplasia"], correctIndex: 0, exp: "ไตข้างที่เหลือจะเกิดการปรับตัวแบบขยายขนาดและเพิ่มสมรรถภาพการทำงานชดเชย (Compensatory adaptation)" },
-    { chName: "Cell Injury & Death", q: "17. ภาวะที่สมองของผู้สูงอายุมีขนาดเล็กลง ร่องสมองกว้างขึ้น เกิดจากการสูญเสียเนื้อเยื่อสมองตามข้อใด", options: ["Brain hypertrophy", "Brain atrophy", "Brain hyperplasia", "Brain dysplasia"], correctIndex: 1, exp: "Atrophy คือการฝ่อลีบหรือขนาดเล็กลงของเซลล์และอวัยวะอันเนื่องมาจากการลดลงของสารประกอบภายในเซลล์และจำนวนเซลล์" },
-    { chName: "Cell Injury & Death", q: "18. ผู้ป่วยเป็นตับอ่อนอักเสบเฉียบพลัน (Acute pancreatitis) มีเนื้อตายแบบ Fat necrosis เกิดจากการรั่วของเอนไซม์ใด", options: ["Pepsin", "Lipase", "Amylase", "Catalase"], correctIndex: 1, exp: "Lipase ที่รั่วออกจากเซลล์ตับอ่อนจะย่อยสลายไขมันรอบตับอ่อน เกิดเป็น Fatty acids รวมกับแคลเซียมกลายเป็นคราบสบู่สีขาวชอล์ก (Fat necrosis)" },
-    { chName: "Cell Injury & Death", q: "19. การอักเสบของหลอดเลือดที่มีเนื้อตายแบบ Fibrinoid necrosis มักสัมพันธ์กับความผิดปกติของระบบภูมิคุ้มกันข้อใด", options: ["การหลั่งสารฮิสตามีนจากเกล็ดเลือด", "การสะสมของ Immune complexes บริเวณผนังหลอดเลือด", "การขาดเซลล์เม็ดเลือดขาว Neutrophil", "การติดเชื้อไวรัส HIV"], correctIndex: 1, exp: "Fibrinoid necrosis เกิดจากการที่สารประกอบภูมิคุ้มกัน (Antigen-antibody complexes) ร่วมกับ Fibrin ไปเกาะตกตะกอนที่ผนังหลอดเลือด" },
-    { chName: "Neoplasia & มะเร็ง", q: "20. ผู้ป่วยมีก้อนเนื้อที่ต้นแขน คลำพบขอบเขตชัดเจน ขยับได้ และโตช้า มีแนวโน้มเป็นเนื้องอกชนิดใดมากที่สุด", options: ["Invasive carcinoma", "Benign tumor (เช่น Lipoma หรือ Fibroma)", "Osteosarcoma", "Metastatic adenocarcinoma"], correctIndex: 1, exp: "Benign tumor (เนื้องอกไม่ร้ายแรง) มักมี Fibrous capsule หุ้ม ขอบเขตเรียบชัดเจน ขยับได้ และไม่รุกรานเนื้อเยื่อรอบข้าง" },
-    { chName: "การอักเสบ (Inflammation)", q: "21. บาดแผลถลอกมีน้ำเหลืองใสเยิ้มซึ่งเป็นสารน้ำที่มีโปรตีนและเซลล์เม็ดเลือดขาวออกมาจากการอักเสบ เรียกว่าอะไร", options: ["Transudate", "Exudate", "Edema fluid จากไตวาย", "Chyle"], correctIndex: 1, exp: "Exudate คือสารน้ำที่รั่วออกมาจากหลอดเลือดระหว่างการอักเสบ มีความถ่วงจำเพาะสูงและมีโปรตีนรวมถึงเม็ดเลือดขาวเข้มข้น" },
-    { chName: "การอักเสบ (Inflammation)", q: "22. อาการผิวหนัง แดง และ ร้อน บริเวณแผลอักเสบ เกิดขึ้นจากกลไกทางสรีรวิทยาข้อใด", options: ["การหดเกร็งของหลอดเลือดแดง", "การขยายตัวของหลอดเลือด (Vasodilation) ทำให้เลือดไหลเวียนมายังบริเวณนั้นมากขึ้น", "การแตกทำลายของต่อมเหงื่อ", "การสะสมของเม็ดสีเมลานิน"], correctIndex: 1, exp: "อาการแดง (Redness) และร้อน (Heat) เป็นผลโดยตรงจากการขยายตัวของหลอดเลือดแดง (Vasodilation) ทำให้มีปริมาณเลือดไหลผ่านเข้ามามากและรวดเร็ว" },
-    { chName: "การอักเสบ (Inflammation)", q: "23. ในระยะเริ่มต้นของการอักเสบ เม็ดเลือดขาวเคลื่อนที่ผ่านผนังหลอดเลือดออกไปยังเนื้อเยื่อ เรียกว่ากระบวนการใด", options: ["Margination", "Emigration (หรือ Diapedesis)", "Phagocytosis", "Opsonization"], correctIndex: 1, exp: "Emigration (Diapedesis) คือขั้นตอนที่เม็ดเลือดขาวบีบตัวแทรกผ่านรอยต่อของเซลล์บุผนังหลอดเลือดออกไปยังเนื้อเยื่อที่มีการบาดเจ็บ" },
-    { chName: "การอักเสบ (Inflammation)", q: "24. การอักเสบทำให้หลอดเลือดมี Vascular permeability เพิ่มขึ้น ส่งผลให้เกิดอาการแสดงทางคลินิกข้อใดเด่นชัด", options: ["ผิวหนังแห้งซีด", "อาการบวม (Swelling / Edema)", "กล้ามเนื้อลีบ", "กระดูกเปราะ"], correctIndex: 1, exp: "เมื่อผนังหลอดเลือดมี Permeability เพิ่มขึ้น สารน้ำและโปรตีนจะรั่วซึมเข้าสู่ Interstitial tissue ก่อให้เกิดอาการบวม (Swelling / Edema)" },
-    { chName: "การอักเสบ (Inflammation)", q: "25. การติดเชื้อแบคทีเรียเฉียบพลัน เม็ดเลือดขาวชนิดใดมีบทบาทเด่นที่สุดในการทำลายเชื้อโรคในระยะแรก", options: ["Lymphocyte", "Neutrophil", "Basophil", "Eosinophil"], correctIndex: 1, exp: "Neutrophil เป็นเซลล์เม็ดเลือดขาวด่านแรกที่ตอบสนองอย่างรวดเร็วและมีจำนวนมากที่สุดในการอักเสบเฉียบพลันจากการติดเชื้อแบคทีเรีย" },
-    { chName: "การอักเสบ (Inflammation)", q: "26. ผู้ป่วยติดเชื้อ Mycobacteria เป็นเวลานาน ทำให้เกิดพยาธิสภาพการอักเสบรูปแบบใด", options: ["Acute serous inflammation", "Chronic granulomatous inflammation", "Acute hemorrhagic inflammation", "Catarrhal inflammation"], correctIndex: 1, exp: "การติดเชื้อ Mycobacterium tuberculosis ทำให้เกิด Chronic granulomatous inflammation ที่มีเซลล์ Epithelioid cells, Langhans giant cells และ Caseous necrosis" },
-    { chName: "การอักเสบ (Inflammation)", q: "27. ปฏิกิริยาการตอบสนองเฉพาะที่ของเนื้อเยื่อต่อการบาดเจ็บหรือการติดเชื้อเพื่อกำจัดสิ่งแปลกปลอมและซ่อมแซม เรียกว่าอะไร", options: ["Necrosis", "Inflammation (การอักเสบ)", "Apoptosis", "Metaplasia"], correctIndex: 1, exp: "Inflammation (การอักเสบ) คือกระบวนการตอบสนองของร่างกายเพื่อกำจัดสาเหตุของการบาดเจ็บและเริ่มต้นกระบวนการซ่อมแซมเนื้อเยื่อ" },
-    { chName: "การอักเสบ (Inflammation)", q: "28. การอักเสบที่มีหนองสะสมอยู่ (Suppurative inflammation) มักเกิดจากการติดเชื้อจุลชีพกลุ่มใด", options: ["ไวรัสไข้หวัดใหญ่", "Pyogenic bacteria (เช่น Staphylococci)", "พยาธิใบไม้", "Prion"], correctIndex: 1, exp: "Suppurative (Purulent) inflammation เกิดจากการติดเชื้อ Pyogenic bacteria ซึ่งกระตุ้นให้มี Neutrophil จำนวนมากจนเกิดเนื้อตายแบบเหลวข้น (Pus)" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "29. ผื่น บวม แดง ร้อน และคัน หลังสัมผัสสารก่อภูมิแพ้ เกิดจากการหลั่งสารใดจาก Mast cells", options: ["Histamine", "Insulin", "Albumin", "Bilirubin"], correctIndex: 0, exp: "Histamine ที่หลั่งจาก Mast cells ทำให้หลอดเลือดขยายตัว ซึมผ่านสารน้ำได้มาก และกระตุ้นปลายประสาททำให้เกิดอาการคันและบวมแดง" },
-    { chName: "การอักเสบ (Inflammation)", q: "30. อาการปวดประจำเดือนเกิดจากการสร้างและหลั่งสาร Mediator ตัวใดที่ทำให้กล้ามเนื้อมดลูกบีบเกร็ง", options: ["Prostaglandins", "Histamine", "Complement C3", "Nitric oxide"], correctIndex: 0, exp: "Prostaglandins มีฤทธิ์กระตุ้นการหดรัดตัวของกล้ามเนื้อเรียบมดลูกและกระตุ้นเส้นประสาทรับความรู้สึกเจ็บปวด" },
-    { chName: "Hemodynamics", q: "31. ออกกำลังกายหนัก กล้ามเนื้อน่องมีสีแดงและอุ่นขึ้นชั่วคราว การเปลี่ยนแปลงนี้เกิดจากข้อใด", options: ["Passive Congestion", "Active Hyperemia", "Venous Thrombosis", "Ischemic necrosis"], correctIndex: 1, exp: "Active Hyperemia เกิดจากการขยายตัวของหลอดเลือดแดงเพื่อส่งเลือดที่มีออกซิเจนและสารอาหารมายังกล้ามเนื้อที่กำลังทำงาน" },
-    { chName: "Hemodynamics", q: "32. Renal artery thrombosis ตรวจพบเนื้อไตรูปร่างคล้ายสามเหลี่ยม/รูปลิ่มมีสีซีด เรียกว่าพยาธิสภาพใด", options: ["Red / Hemorrhagic infarct", "Pale / White infarct", "Venous congestion", "Hematoma"], correctIndex: 1, exp: "Pale (White) infarct เกิดจากการอุดตันของหลอดเลือดแดงในอวัยวะตันที่มีหลอดเลือดเลี้ยงทางเดียว เช่น ไตและหัวใจ" },
-    { chName: "Hemodynamics", q: "33. ผู้ป่วยไมเกรนที่ใช้ยา Ergotamine มากเกินไป มีอาการเท้าเขียวคล้ำและปวดรุนแรง กลไกเริ่มต้นจากข้อใด", options: ["หลอดเลือดดำอุดตันจากพยาธิ", "Severe arterial vasoconstriction (หลอดเลือดแดงหดตัวรุนแรง)", "การขาดวิตามินซี", "เกล็ดเลือดต่ำเฉียบพลัน"], correctIndex: 1, exp: "Ergotamine ออกฤทธิ์ทำให้หลอดเลือดแดงหดเกร็งตัวอย่างรุนแรง (Arterial vasoconstriction) จนเนื้อเยื่อส่วนปลายขาดเลือด (Ischemia) และเกิดเนื้อตาย" },
-    { chName: "Hemodynamics", q: "34. ผู้ป่วยบาดเจ็บกล้ามเนื้อรุนแรง (Rhabdomyolysis) มีปัสสาวะสีน้ำตาลเข้ม เกิดจากกลไกข้อใด", options: ["การหลั่ง Bilirubin สู่กระแสเลือด", "Myoglobin รั่วจากกล้ามเนื้อเข้าสู่กระแสเลือดและกรองไปอุดตันท่อไต", "การติดเชื้อไวรัสตับอักเสบ", "การขาดโปรตีนในเลือด"], correctIndex: 1, exp: "Rhabdomyolysis ทำให้ Myoglobin จากกล้ามเนื้อที่สลายตัวรั่วเข้าสู่กระแสเลือด กรองผ่านไตและตกตะกอนอุดตันท่อไต ทำให้ปัสสาวะมีสีน้ำตาลเข้ม" },
-    { chName: "Hemodynamics", q: "35. นั่งเครื่องบินระยะยาวแล้วมีอาการปวดบวมที่ขาข้างเดียว คล้ายเส้นเลือดขอด พยาธิสภาพนี้นึกถึงโรคใด", options: ["Deep Vein Thrombosis (DVT)", "Arterial embolism", "Gas gangrene", "Elephantiasis"], correctIndex: 0, exp: "การนั่งนิ่งเป็นเวลานานทำให้เกิด Stasis of blood flow ในหลอดเลือดดำส่วนลึกของขา นำไปสู่ภาวะ Deep Vein Thrombosis (DVT)" },
-    { chName: "Hemodynamics", q: "36. ผู้ป่วยไอออกมาเป็นเลือดสดจากระบบทางเดินหายใจ เรียกว่าอาการใด", options: ["Hematemesis", "Hemoptysis", "Melena", "Hematuria"], correctIndex: 1, exp: "Hemoptysis คือการไอเป็นเลือดสดจากทางเดินหายใจ ส่วน Hematemesis คือการอาเจียนเป็นเลือดจากทางเดินอาหาร" },
-    { chName: "สิ่งแวดล้อมและโภชนาการ", q: "37. ผู้ป่วยแผลไฟไหม้บริเวณกว้างที่มีอาการปวดบวมอย่างรวดเร็ว ควรระวังภาวะแทรกซ้อนอันตรายใดมากที่สุด", options: ["Hypovolemic shock จากการสูญเสียสารน้ำออกนอกหลอดเลือด", "ความดันโลหิตสูงเฉียบพลัน", "ภาวะเลือดข้นเกินไปจนแข็งตัวไม่ได้", "ตับวายจากสารพิษ"], correctIndex: 0, exp: "แผลไฟไหม้รุนแรงจะทำให้หลอดเลือดซึมผ่านสารน้ำออกสู่ Interstitium มหาศาล เกิดภาวะ Hypovolemic shock ที่อันตรายถึงชีวิต" },
-    { chName: "Hemodynamics", q: "38. รอยฟกช้ำที่เปลี่ยนเป็นสีเหลืองหรือสีน้ำตาลทอง เกิดจากการสะสมของสารใด", options: ["Hemoglobin", "Bilirubin และ Hemosiderin", "Biliverdin", "Melanin"], correctIndex: 1, exp: "การสลายตัวของเม็ดเลือดแดงในรอยช้ำระยะท้ายจะเปลี่ยน Biliverdin ไปเป็น Bilirubin และ Hemosiderin ซึ่งให้สีเหลืองและน้ำตาลทอง" },
-    { chName: "Hemodynamics", q: "39. อาการบวมบุ๋มทั้งสองข้าง (Pitting edema) ในผู้ป่วยโรคตับ เกิดจากกลไกข้อใด", options: ["Increased oncotic pressure", "Decreased plasma oncotic pressure จากภาวะ Hypoalbuminemia", "Lymphatic obstruction", "Arterial spasm"], correctIndex: 1, exp: "ตับที่เสื่อมสภาพสร้าง Albumin ได้ลดลง ทำให้แรงดึงน้ำในหลอดเลือด (Plasma oncotic pressure) ลดลง สารน้ำจึงรั่วออกสู่เนื้อเยื่อเกิดบวมบุ๋ม" },
-    { chName: "Neoplasia & มะเร็ง", q: "40. คำว่า 'Anaplasia' ในทางพยาธิวิทยามะเร็ง หมายถึงข้อใด", options: ["การเปลี่ยนแปลงชนิดของเซลล์แบบกลับคืนได้", "การสูญเสียการเปลี่ยนแปลงสัณฐานและการทำหน้าที่ของเซลล์อย่างสิ้นเชิง (Lack of differentiation)", "การที่เซลล์มีขนาดเท่ากันทุกเซลล์", "การตายของเซลล์แบบ Apoptosis"], correctIndex: 1, exp: "Anaplasia คือลักษณะของเซลล์มะเร็งชั้นสูงที่สูญเสีย Differentiation โดยสิ้นเชิง เซลล์มีรูปร่างผิดเพี้ยนไปจนไม่สามารถบอกเซลล์ต้นกำเนิดได้" },
-    { chName: "Neoplasia & มะเร็ง", q: "41. กลไกของเชื้อไวรัส HPV ที่ทำให้เกิดมะเร็งปากมดลูก เกิดจากการทำงานของโปรตีนใด", options: ["E6 ยับยั้ง p53 และ E7 ยับยั้ง RB tumor suppressor proteins", "E6 ยับยั้ง RB และ E7 ยับยั้ง p53", "สร้างสารพิษทำลายดีเอ็นเอโดยตรง", "ยับยั้งเอนไซม์ Cytochrome P450"], correctIndex: 0, exp: "Oncoprotein E6 ของ HPV เข้าจับทำลาย p53 และ E7 เข้าจับยับยั้ง RB ทำให้เซลล์แบ่งตัวอย่างผิดปกติโดยไม่มีการควบคุม" },
-    { chName: "Neoplasia & มะเร็ง", q: "42. ผู้ป่วยโรค Xeroderma pigmentosum เสี่ยงต่อการเป็นมะเร็งผิวหนังจากแสงแดด เนื่องจากระบบซ่อมแซม DNA ใดบกพร่อง", options: ["Mismatch repair system", "Nucleotide excision repair pathway (ไม่สามารถซ่อม Pyrimidine dimers ได้)", "Base excision repair", "Homologous end joining"], correctIndex: 1, exp: "Xeroderma pigmentosum มีความบกพร่องของ Nucleotide excision repair ทำให้เซลล์ไม่สามารถซ่อมแซม Pyrimidine dimers ที่เกิดจากรังสี UV ได้" },
-    { chName: "Neoplasia & มะเร็ง", q: "43. เซลล์เนื้องอกที่มีขนาด รูปร่างแตกต่างกันหลากหลาย และนิวเคลียสติดสีเข้มจัด เรียกลักษณะดังกล่าวว่าอะไร", options: ["Hyperplasia และ Atrophy", "Pleomorphism และ Nuclear hyperchromatism", "Metaplasia และ Steatosis", "Karyolysis"], correctIndex: 1, exp: "Pleomorphism คือความหลากหลายของขนาดและรูปร่างเซลล์ ส่วน Hyperchromatism คือนิวเคลียสติดสีเข้มจากปริมาณ DNA ที่เพิ่มขึ้น" },
-    { chName: "สิ่งแวดล้อมและโภชนาการ", q: "44. ผู้ป่วยมีอาการน้ำลายไหล รูม่านตาหด หัวใจเต้นช้า และกล้ามเนื้อกระตุกหลังฉีดยาฆ่าแมลง กลไกสำคัญเกิดจากข้อใด", options: ["Organophosphate ยับยั้งเอนไซม์ Acetylcholinesterase ทำให้ Acetylcholine คั่ง", "สารตะกั่วทำลายไขกระดูก", "การขาดออกซิเจนในเม็ดเลือดแดง", "เซลล์ตับถูกทำลายด้วย NAPQI"], correctIndex: 0, exp: "Organophosphate ยับยั้งเอนไซม์ AChE ส่งผลให้เกิดการกระตุ้นตัวรับ Muscarinic และ Nicotinic มากเกินไป (SLUDGE syndrome)" },
-    { chName: "สิ่งแวดล้อมและโภชนาการ", q: "45. รับประทานยาเบื่อหนูที่มีสารกลุ่ม Warfarin ทำให้มีจ้ำเลือดและเลือดออกไม่หยุด ควรใช้สารใดเป็นยาต้านพิษ (Antidote)", options: ["Vitamin C", "Vitamin K", "N-acetylcysteine", "Atropine"], correctIndex: 1, exp: "Warfarin ออกฤทธิ์ต้าน Vitamin K การให้ Vitamin K จะช่วยให้ตับกลับมาสร้าง Clotting factors (II, VII, IX, X) ได้ตามปกติ" },
-    { chName: "สิ่งแวดล้อมและโภชนาการ", q: "46. ยาพาราเซตามอลก่อพิษต่อตับผ่านสารตัวกลางชนิดใดเมื่อเกิดภาวะ Glutathione หมดไป", options: ["Acetaldehyde", "NAPQI (N-acetyl-p-benzoquinone imine)", "Formaldehyde", "Carbon monoxide"], correctIndex: 1, exp: "NAPQI เป็นสารพิษตัวกลางที่เกิดจากการเผาผลาญพาราเซตามอล เมื่อ Glutathione หมดจะทำให้เซลล์ตับเกิด Necrosis" },
-    { chName: "สิ่งแวดล้อมและโภชนาการ", q: "47. ตรวจพบชิ้นเนื้อปอดมีพังผืดและเส้นใยบางยาว (Fibers) คั่งค้าง สัมพันธ์กับการวินิจฉัยโรคใด", options: ["Silicosis", "Asbestosis (โรคปอดจากแร่ใยหิน)", "Anthracosis", "Berylliosis"], correctIndex: 1, exp: "Asbestosis มีลักษณะเฉพาะคือการสะสมของเส้นใยแร่ใยหิน (Asbestos fibers) ในเนื้อปอดและเยื่อหุ้มปอดหนาตัว" },
-    { chName: "บทนำพยาธิวิทยา", q: "48. แหล่งสะสมหลักของไขมันในร่างกายที่มักพบการเปลี่ยนแปลงแบบ Fatty change เมื่อเกิดการบาดเจ็บคืออวัยวะใด", options: ["สมอง", "ตับ (Liver)", "ไต", "ม้าม"], correctIndex: 1, exp: "ตับเป็นอวัยวะหลักในการเผาผลาญไขมัน เมื่อเซลล์ตับบาดเจ็บจะพบการสะสมของหยดไขมัน (Fatty change / Steatosis) ได้ชัดเจนที่สุด" },
-    { chName: "สิ่งแวดล้อมและโภชนาการ", q: "49. นักวิ่งหมดสติกลางแดด อุณหภูมิกาย 41.2°C กลไกหลักของ Heat stroke ในระดับเซลล์คือข้อใด", options: ["Protein denaturation และ Vascular endothelial damage", "การสะสมของสารตะกั่ว", "ขาดวิตามินเอ", "ภาวะเม็ดเลือดขาวต่ำ"], correctIndex: 0, exp: "ความร้อนที่สูงเกิน 40°C ทำให้โปรตีนในเซลล์เสียสภาพ (Protein denaturation), เซลล์เยื่อบุหลอดเลือดเสียหาย และเกิด Multi-organ dysfunction" },
-    { chName: "สิ่งแวดล้อมและโภชนาการ", q: "50. เด็กที่ขาดสารอาหารโปรตีนอย่างรุนแรงแต่ได้คาร์โบไฮเดรต มีอาการบวมน้ำ ท้องป่อง และตับโต คือโรคใด", options: ["Marasmus", "Kwashiorkor", "Scurvy", "Rickets"], correctIndex: 1, exp: "Kwashiorkor เป็นโรคขาดโปรตีน ทำให้ระดับ Albumin ต่ำ เกิดอาการบวมน้ำ ท้องป่อง และ Fatty liver" },
-    { chName: "สิ่งแวดล้อมและโภชนาการ", q: "51. หญิงที่วางแผนตั้งครรภ์ควรรับประทานวิตามินใดเพื่อป้องกันความพิการแต่กำเนิดทางระบบประสาท (Neural tube defects)", options: ["Vitamin A", "Folic acid (Vitamin B9)", "Vitamin C", "Vitamin D"], correctIndex: 1, exp: "Folic acid (Vitamin B9) มีความสำคัญต่อการสร้างหลอดประสาทของตัวอ่อนในครรภ์ ช่วยป้องกันภาวะ Neural tube defects" },
-    { chName: "สิ่งแวดล้อมและโภชนาการ", q: "52. ทารกที่มีกลุ่มอาการ Fetal Alcohol Syndrome (FAS) มักมีลักษณะทางกายภาพตามข้อใด", options: ["ศีรษะเล็ก (Microcephaly), ร่องเหนือริมฝีปากบนเรียบ (Smooth philtrum) และริมฝีปากบนบาง", "ศีรษะโตผิดปกติ ตาโปน", "กรามใหญ่ ฟันซ้อนเก", "แขนขายาวเกินปกติ"], correctIndex: 0, exp: "FAS มีลักษณะเด่นคือ Microcephaly, Small palpebral fissures, Smooth philtrum และ Thin upper lip" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "53. เซลล์ชนิดใดในระบบภูมิคุ้มกันที่ทำหน้าที่สร้างและหลั่งแอนติบอดีเพื่อจับกับเชื้อโรค", options: ["T-helper cell", "Plasma cell (พัฒนามาจาก B cell)", "Neutrophil", "Macrophage"], correctIndex: 1, exp: "B lymphocyte เมื่อได้รับการกระตุ้นจากแอนติเจนจะพัฒนาเป็น Plasma cell เพื่อสร้างและหลั่งแอนติบอดี (Immunoglobulins)" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "54. การทดสอบ PPD (Tuberculin skin test) สำหรับวัณโรค เกิดจากปฏิกิริยาของเซลล์ชนิดใด", options: ["IgE และ Basophils", "CD4+ T cells และ Macrophages (Type IV Hypersensitivity)", "เกล็ดเลือด", "B cells สร้างแอนติบอดีทำลายทันที"], correctIndex: 1, exp: "PPD test เป็น Delayed-type hypersensitivity (Type IV) ที่อาศัยการทำงานของ Sensitized CD4+ T cells และ Macrophages" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "55. ผู้ป่วยแพ้ถั่วลิสง รับประทานแล้ว 15 นาทีเกิดผื่น ผิวหนังแดง หายใจลำบาก จัดเป็นภูมิไวเกินชนิดใด", options: ["Type I Hypersensitivity (Immediate / Anaphylaxis)", "Type II Hypersensitivity", "Type III Hypersensitivity", "Type IV Hypersensitivity"], correctIndex: 0, exp: "การแพ้อาหารเฉียบพลันเกิดจากแอนติบอดี IgE บนผิว Mast cell ทำให้หลั่ง Histamine ภายในไม่กี่นาที จัดเป็น Type I Hypersensitivity" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "56. ผู้ป่วยโรค AIHA มีแอนติบอดีจับกับแอนติเจนบนเม็ดเลือดแดงทำให้เม็ดเลือดแดงแตก จัดเป็น Hypersensitivity ชนิดใด", options: ["Type I", "Type II (Antibody-mediated hypersensitivity)", "Type III", "Type IV"], correctIndex: 1, exp: "Type II Hypersensitivity เกิดจากแอนติบอดี (IgG หรือ IgM) เข้าจับกับแอนติเจนบนผิวเซลล์เป้าหมายโดยตรงและกระตุ้นการทำลายเซลล์" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "57. อาการไข้ ปวดสีข้าง และปัสสาวะสีแดงหลังการให้เลือดผิดหมู่ เกิดจากกลไกข้อใด", options: ["Transfusion reaction โดยแอนติบอดีทำลายเม็ดเลือดแดงแตกในหลอดเลือดและเกิด Hemoglobinuria", "การติดเชื้อแบคทีเรียในกระเพาะปัสสาวะ", "การขาดน้ำอย่างรุนแรง", "เกล็ดเลือดทำงานผิดปกติ"], correctIndex: 0, exp: "การให้เลือดผิดหมู่ (ABO incompatibility) ทำให้เกิดปฏิกิริยา Type II Hypersensitivity เม็ดเลือดแดงแตกเฉียบพลัน ปล่อย Hemoglobin ออกมาในปัสสาวะและกระตุ้นการอักเสบทั่วร่างกาย" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "58. ภาวะ Autoimmunity (โรคภูมิต้านทานตนเอง) เกิดขึ้นจากความผิดปกติของระบบภูมิคุ้มกันในข้อใด", options: ["การสูญเสียภาวะ Self-tolerance ทำให้ระบบภูมิคุ้มกันเข้าทำลายเนื้อเยื่อตนเอง", "ร่างกายสร้างเม็ดเลือดขาวไม่ได้", "ไขกระดูกไม่สร้างเกล็ดเลือด", "การได้รับวัคซีนมากเกินไป"], correctIndex: 0, exp: "Autoimmunity เกิดจากความล้มเหลวของกลไก Self-tolerance ทำให้ T cells และ B cells จดจำเนื้อเยื่อของตนเองว่าเป็นสิ่งแปลกปลอม" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "59. ผู้ป่วยติดเชื้อไวรัส HIV เกิดภาวะภูมิคุ้มกันบกพร่องรุนแรงเนื่องจากสาเหตุใด", options: ["ไวรัสเข้าทำลายเซลล์ CD4+ T helper cells ทำให้ภูมิคุ้มกันล้มเหลว", "ไวรัสทำลายเซลล์ตับจนสร้างโปรตีนไม่ได้", "ไวรัสทำให้หลอดเลือดแตก", "ไวรัสทำลายเฉพาะเซลล์กล้ามเนื้อ"], correctIndex: 0, exp: "HIV เข้าจับกับตัวรับ CD4 บนผิว T helper cells และทำลายเซลล์เหล่านี้อย่างต่อเนื่อง ส่งผลให้เกิดภาวะภูมิคุ้มกันบกพร่องและการติดเชื้อฉวยโอกาส" },
-    { chName: "การอักเสบ (Inflammation)", q: "60. เมื่อเนื้อเยื่อเกิดการอักเสบ เซลล์ชนิดใดที่ทำหน้าที่เป็น Sentinel cells คอยรับรู้สิ่งแปลกปลอมและหลั่งสาร Mediator ในระยะเริ่มต้น", options: ["Macrophages, Mast cells และ Dendritic cells ในเนื้อเยื่อ", "เซลล์เม็ดเลือดแดง", "เซลล์กระดูก", "เซลล์ประสาท"], correctIndex: 0, exp: "Sentinel cells ประจำเนื้อเยื่อ ได้แก่ Macrophages, Dendritic cells และ Mast cells จะทำหน้าที่ตรวจจับจุลชีพและหลั่งสารเคมีเริ่มต้นกระบวนการอักเสบ" }
-];
+const examDatabase = [
+    // --- ข้อ 1 - 60: ตรงตามแนวข้อสอบเป๊ะ ๆ ---
+    {
+        ch: "ch1",
+        group: "core",
+        chName: "บทนำและเทคนิคพยาธิวิทยา",
+        q: "1. [แนวข้อ 1] ข้อใดจับคู่คำจำกัดความพื้นฐานทางพยาธิวิทยาได้ถูกต้อง",
+        options: [
+            "Pathology - ศึกษาการทำงานตามปกติของร่างกาย",
+            "Etiology - ศึกษาสาเหตุของการเกิดโรคหรือการบาดเจ็บ",
+            "Pathogenesis - ศึกษาการเปลี่ยนแปลงโครงสร้างด้วยตาเปล่า",
+            "Homeostasis - ภาวะที่เซลล์ไม่สามารถปรับตัวได้จนเกิดเนื้อตาย"
+        ],
+        ans: 1,
+        exp: "Etiology คือการศึกษาสาเหตุของโรค ส่วน Pathology คือการศึกษาความผิดปกติของโครงสร้างเซลล์/เนื้อเยื่อ, Pathogenesis คือกลไกการเกิดโรคทีละขั้นตอน และ Homeostasis คือภาวะธำรงดุล"
+    },
+    {
+        ch: "ch1",
+        group: "core",
+        chName: "บทนำและเทคนิคพยาธิวิทยา",
+        q: "2. [แนวข้อ 2] ผู้ป่วยโรคตับแข็ง (Liver cirrhosis) หากนำชิ้นเนื้อตับไปย้อมพิเศษเพื่อดูพังผืด (Fibrosis) ต้องใช้สีใดและให้ผลอย่างไร",
+        options: [
+            "ย้อม Prussian Blue ได้ผลเป็นตะกอนสีน้ำเงินของไขมัน",
+            "ย้อม Masson's Trichrome พบเนื้อเยื่อพังผืด (Fibrous septa) ติดสีน้ำเงิน ล้อมรอบ Regenerative nodules",
+            "ย้อม Oil Red O พบพังผืดติดสีชมพูใส",
+            "ย้อม Hematoxylin อย่างเดียวพบเซลล์ตับติดสีเขียว"
+        ],
+        ans: 1,
+        exp: "Masson's Trichrome เป็นสีพิเศษที่ย้อมคอลลาเจน/พังผืดติดสีน้ำเงิน ซึ่งจะเห็นเป็นแถบ Fibrous septa สีน้ำเงินคั่นรอบก้อนเซลล์ตับ (Nodules) สีแดงอย่างชัดเจนในตับแข็ง"
+    },
+    {
+        ch: "ch1",
+        group: "core",
+        chName: "บทนำและเทคนิคพยาธิวิทยา",
+        q: "3. [แนวข้อ 3] ในการเตรียมชิ้นเนื้อเพื่อฝังในพาราฟินบล็อก (Tissue processing) มีลำดับขั้นตอนที่ถูกต้องตามข้อใด",
+        options: [
+            "Fixation → Clearing → Dehydration → Infiltration → Embedding",
+            "Fixation → Dehydration → Clearing → Infiltration → Embedding",
+            "Embedding → Sectioning → Clearing → Staining → Mounting",
+            "Dehydration → Fixation → Infiltration → Clearing → Sectioning"
+        ],
+        ans: 1,
+        exp: "ลำดับการเตรียมชิ้นเนื้อมาตรฐานคือ: 1. Fixation (คงสภาพ) → 2. Dehydration (ไล่น้ำด้วยแอลกอฮอล์) → 3. Clearing (ทำให้ใสด้วยไซลีน) → 4. Infiltration (แทรกซึมพาราฟิน 52-60°C) → 5. Embedding (หล่อบล็อก)"
+    },
+    {
+        ch: "ch1",
+        group: "core",
+        chName: "บทนำและเทคนิคพยาธิวิทยา",
+        q: "4. [แนวข้อ 4] ขั้นตอนการตัดชิ้นเนื้อ (Sectioning) เพื่อนำไปย้อมสีสไลด์ถาวร นิยมตัดด้วยเครื่องมือใดและมีความหนาเท่าใด",
+        options: [
+            "ตัดด้วยมีดผ่าตัด ความหนา 1-2 มิลลิเมตร",
+            "ตัดด้วยเครื่อง Microtome ความหนาประมาณ 3-5 ไมโครเมตร",
+            "ตัดด้วยเครื่อง Cryostat ความหนา 50 ไมโครเมตร",
+            "ตัดด้วยเครื่องเลเซอร์ ความหนา 100 ไมโครเมตร"
+        ],
+        ans: 1,
+        exp: "การตัดชิ้นเนื้อมาตรฐานทางพยาธิวิทยาใช้เครื่อง Rotary Microtome ตัดชิ้นเนื้อที่ฝังในพาราฟินบล็อกให้มีความหนา 3-5 ไมโครเมตร"
+    },
+    {
+        ch: "ch1",
+        group: "core",
+        chName: "บทนำและเทคนิคพยาธิวิทยา",
+        q: "5. [แนวข้อ 5] ข้อใดกล่าวถึงการตรวจชิ้นเนื้อด้วยเทคนิคแช่แข็งด่วน (Frozen section) ได้ถูกต้อง",
+        options: [
+            "ต้องนำชิ้นเนื้อไปแช่ฟอร์มาลิน 24 ชั่วโมงก่อนตัด",
+            "เป็นการเตรียมชิ้นเนื้ออย่างรวดเร็วเพื่อการวินิจฉัยระหว่างการผ่าตัด (Intraoperative consultation)",
+            "ต้องฝังชิ้นเนื้อในพาราฟินเหลวที่อุณหภูมิ 60°C",
+            "ไม่สามารถใช้เครื่องตรวจดูเซลล์ได้"
+        ],
+        ans: 1,
+        exp: "Frozen section ทำโดยนำชิ้นเนื้อสดมาแช่แข็งในเครื่อง Cryostat เพื่อตัดและย้อมสีทันที ช่วยให้ศัลยแพทย์ทราบผลการวินิจฉัยขณะผู้ป่วยยังอยู่ในห้องผ่าตัด"
+    },
+    {
+        ch: "ch1",
+        group: "core",
+        chName: "บทนำและเทคนิคพยาธิวิทยา",
+        q: "6. [แนวข้อ 6] การตรวจโปรตีนหรือแอนติเจนที่จำเพาะ เช่น PSA ในเนื้อเยื่อต่อมลูกหมาก อาศัยเทคนิคในข้อใด",
+        options: [
+            "Immunohistochemistry (IHC) โดยอาศัยแอนติบอดีจับจำเพาะกับแอนติเจน",
+            "Masson's Trichrome staining",
+            "Acid-fast bacilli staining",
+            "Oil Red O staining"
+        ],
+        ans: 0,
+        exp: "Immunohistochemistry (IHC) เป็นเทคนิคที่ใช้แอนติบอดีจำเพาะเข้าจับกับโปรตีนเป้าหมาย เช่น PSA เพื่อตรวจหาการแสดงออกของเซลล์ในต่อมลูกหมาก"
+    },
+    {
+        ch: "ch1",
+        group: "core",
+        chName: "บทนำและเทคนิคพยาธิวิทยา",
+        q: "7. [แนวข้อ 7] ผู้ป่วยมีอาการกล้ามเนื้ออ่อนแรงจากโรค Myasthenia gravis มีพยาธิกำเนิดระดับโมเลกุลเกิดจากอะไร",
+        options: [
+            "การสร้าง Autoantibody ไปขัดขวางและทำลาย Acetylcholine receptor ที่รอยต่อประสาทและกล้ามเนื้อ",
+            "ขาดเอนไซม์ย่อยไขมันในเซลล์กล้ามเนื้อ",
+            "การสะสมของคราบเคราตินในหลอดเลือด",
+            "เซลล์กล้ามเนื้อหัวใจฝ่อลีบจากพันธุกรรม"
+        ],
+        ans: 0,
+        exp: "Myasthenia gravis เกิดจากระบบภูมิคุ้มกันสร้าง Autoantibodies ต่อ Acetylcholine receptors บริเวณ Neuromuscular junction ส่งผลให้การส่งสัญญาณประสาทล้มเหลวและกล้ามเนื้ออ่อนแรง"
+    },
+    {
+        ch: "ch1",
+        group: "core",
+        chName: "บทนำและเทคนิคพยาธิวิทยา",
+        q: "8. [แนวข้อ 8] ผู้ป่วยมีไข้ ปวดศีรษะ สงสัยติดเชื้อในระบบประสาท ย้อมสารเรืองแสงพบแสงสีเขียวสว่างใต้กล้องฟลูออเรสเซนส์ เทคนิคนี้คือข้อใด",
+        options: [
+            "Immunofluorescence (IFA) โดยใช้สารเรืองแสง FITC ติดฉลากบนแอนติบอดี",
+            "การย้อมสี Hematoxylin and Eosin",
+            "การทำ Laser Ablation ICP-MS",
+            "การตรวจนับเม็ดเลือดสมบูรณ์ (CBC)"
+        ],
+        ans: 0,
+        exp: "Immunofluorescence (IFA) ใช้แอนติบอดีติดฉลากสารเรืองแสง FITC ซึ่งจะเปล่งแสงสีเขียวสว่างเมื่อจับกับเชื้อก่อโรค เช่น ในการตรวจไวรัสพิษสุนัขบ้า (RFFIT)"
+    },
+    {
+        ch: "ch7",
+        group: "core",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "9. [แนวข้อ 9] ทฤษฎีภูมิคุ้มกัน: Innate immunity แตกต่างจาก Adaptive immunity ในข้อใด",
+        options: [
+            "Innate immunity ตอบสนองช้าและมีความจำจำเพาะ",
+            "Innate immunity ตอบสนองทันที ไม่จำเพาะ และไม่มีหน่วยความจำ ส่วน Adaptive มีความจำเพาะและอาศัย T/B cells",
+            "Adaptive immunity ประกอบด้วยเซลล์ Neutrophil และด่านผิวหนังเท่านั้น",
+            "Innate immunity ต้องอาศัยการสร้างแอนติบอดีเสมอ"
+        ],
+        ans: 1,
+        exp: "Innate immunity คือภูมิคุ้มกันด่านแรก ตอบสนองรวดเร็ว ไม่จำเพาะเจาะจง ส่วน Adaptive immunity มีความจำเพาะสูง สร้างหน่วยความจำ และอาศัยการทำงานของ T และ B lymphocytes"
+    },
+    {
+        ch: "ch1",
+        group: "core",
+        chName: "บทนำและเทคนิคพยาธิวิทยา",
+        q: "10. [แนวข้อ 10] ผู้ป่วยโรคอ้วนและดื่มสุราเป็นประจำ สงสัยภาวะไขมันสะสมในเซลล์ตับ (Steatosis) ควรย้อมชิ้นเนื้อแช่แข็งด้วยวิธีใด",
+        options: [
+            "ย้อม Prussian Blue ได้สีน้ำเงิน",
+            "ย้อม Oil Red O (ORO) ตรวจพบหยดไขมันติดสีแดงสดภายในเซลล์",
+            "ย้อม Gram stain ได้สีม่วง",
+            "ย้อม Pap smear"
+        ],
+        ans: 1,
+        exp: "Oil Red O ละลายได้ดีในไขมัน จึงใช้ย้อมหยดไขมัน (Triglycerides/Lipids) ในเซลล์ตับจากชิ้นเนื้อสดหรือแช่แข็งให้เห็นเป็นสีแดงสด"
+    },
+    {
+        ch: "ch1",
+        group: "core",
+        chName: "บทนำและเทคนิคพยาธิวิทยา",
+        q: "11. [แนวข้อ 11] การตรวจชิ้นเนื้อก้อนมะเร็งเต้านมเพื่อหาโปรตีน HER2 เพื่อวางแผนการรักษา นิยมใช้เทคนิคใด",
+        options: [
+            "Masson's Trichrome",
+            "Immunohistochemistry (IHC)",
+            "Acid Fast Stain",
+            "CBC Analysis"
+        ],
+        ans: 1,
+        exp: "Immunohistochemistry (IHC) เป็นวิธีมาตรฐานที่ใช้ตรวจวัดระดับการแสดงออกของโปรตีน HER2 receptor บนผิวเซลล์มะเร็งเต้านม"
+    },
+    {
+        ch: "ch6",
+        group: "core",
+        chName: "สิ่งแวดล้อมและโภชนาการ",
+        q: "12. [แนวข้อ 12] ผู้ป่วยสูบบุหรี่จัดมานาน เยื่อบุหลอดลมเปลี่ยนจาก Pseudostratified ciliated columnar เป็น Stratified squamous จัดเป็นพยาธิสภาพใด",
+        options: [
+            "Dysplasia",
+            "Squamous metaplasia",
+            "Hypertrophy",
+            "Atrophy"
+        ],
+        ans: 1,
+        exp: "Squamous metaplasia ในหลอดลมของผู้สูบบุหรี่เป็นการปรับเปลี่ยนชนิดของเซลล์เยื่อบุผิวเพื่อให้ทนทานต่อสารระคายเคืองในควันบุหรี่ได้ดียิ่งขึ้น"
+    },
+    {
+        ch: "ch4",
+        group: "core",
+        chName: "Cell Injury & Death",
+        q: "13. [แนวข้อ 13] ข้อใดจัดเป็นการบาดเจ็บของเซลล์ที่ 'สามารถกลับคืนสู่ภาวะปกติได้' (Reversible cell injury)",
+        options: [
+            "การเกิดพังผืด (Fibrosis) และตับแข็ง",
+            "เซลล์บวมน้ำ (Cellular swelling) และการสะสมไขมัน (Fatty change)",
+            "การละลายนิวเคลียส (Karyolysis)",
+            "การแตกสลายของเยื่อหุ้มเซลล์ในเนื้อตาย"
+        ],
+        ans: 1,
+        exp: "Cellular swelling (จากการทำงานของ Na/K pump ลดลงชั่วคราว) และ Fatty change จัดเป็นการบาดเจ็บระยะแรกที่สามารถฟื้นตัวกลับมาเป็นปกติได้หากหมดสิ่งกระตุ้น"
+    },
+    {
+        ch: "ch4",
+        group: "core",
+        chName: "Cell Injury & Death",
+        q: "14. [แนวข้อ 14] การปรับตัวของเซลล์ (Cellular adaptation) โดยการ 'เพิ่มขนาดของเซลล์' ส่งผลให้อวัยวะโตขึ้น เรียกว่าอะไร",
+        options: [
+            "Hyperplasia",
+            "Hypertrophy",
+            "Atrophy",
+            "Metaplasia"
+        ],
+        ans: 1,
+        exp: "Hypertrophy คือการเพิ่ม 'ขนาด' ของเซลล์ เช่น กล้ามเนื้อหัวใจหนาตัวขึ้นในคนเป็นความดันโลหิตสูง"
+    },
+    {
+        ch: "ch4",
+        group: "core",
+        chName: "Cell Injury & Death",
+        q: "15. [แนวข้อ 15] การปรับตัวของเซลล์ในข้อใดที่ส่งผลให้ 'จำนวนของเซลล์เพิ่มขึ้น' (Increased cell number)",
+        options: [
+            "Hypertrophy",
+            "Hyperplasia",
+            "Atrophy",
+            "Dysplasia"
+        ],
+        ans: 1,
+        exp: "Hyperplasia คือการเพิ่ม 'จำนวน' เซลล์ เช่น การหนาตัวของเยื่อบุโพรงมดลูกจากการกระตุ้นของฮอร์โมน"
+    },
+    {
+        ch: "ch4",
+        group: "core",
+        chName: "Cell Injury & Death",
+        q: "16. [แนวข้อ 16] หลังผู้ป่วยถูกตัดไตออกไปหนึ่งข้าง ไตข้างที่เหลือจะขยายขนาดขึ้นเพื่อทำหน้าที่ชดเชย จัดเป็นการปรับตัวแบบใด",
+        options: [
+            "Compensatory hyperplasia และ hypertrophy",
+            "Pathologic atrophy",
+            "Dysplasia",
+            "Squamous metaplasia"
+        ],
+        ans: 0,
+        exp: "ไตข้างที่เหลือจะเกิดการปรับตัวแบบขยายขนาดและเพิ่มสมรรถภาพการทำงานชดเชย (Compensatory adaptation)"
+    },
+    {
+        ch: "ch4",
+        group: "core",
+        chName: "Cell Injury & Death",
+        q: "17. [แนวข้อ 17] ภาวะที่สมองของผู้สูงอายุมีขนาดเล็กลง ร่องสมองกว้างขึ้น เกิดจากการสูญเสียเนื้อเยื่อสมองตามข้อใด",
+        options: [
+            "Brain hypertrophy",
+            "Brain atrophy",
+            "Brain hyperplasia",
+            "Brain dysplasia"
+        ],
+        ans: 1,
+        exp: "Atrophy คือการฝ่อลีบหรือขนาดเล็กลงของเซลล์และอวัยวะอันเนื่องมาจากการลดลงของสารประกอบภายในเซลล์และจำนวนเซลล์"
+    },
+    {
+        ch: "ch4",
+        group: "core",
+        chName: "Cell Injury & Death",
+        q: "18. [แนวข้อ 18] ผู้ป่วยเป็นตับอ่อนอักเสบเฉียบพลัน (Acute pancreatitis) มีเนื้อตายแบบ Fat necrosis เกิดจากการรั่วของเอนไซม์ใด",
+        options: [
+            "Pepsin",
+            "Lipase",
+            "Amylase",
+            "Catalase"
+        ],
+        ans: 1,
+        exp: "Lipase ที่รั่วออกจากเซลล์ตับอ่อนจะย่อยสลายไขมันรอบตับอ่อน เกิดเป็น Fatty acids รวมกับแคลเซียมกลายเป็นคราบสบู่สีขาวชอล์ก (Fat necrosis)"
+    },
+    {
+        ch: "ch4",
+        group: "core",
+        chName: "Cell Injury & Death",
+        q: "19. [แนวข้อ 19] การอักเสบของหลอดเลือดที่มีเนื้อตายแบบ Fibrinoid necrosis มักสัมพันธ์กับความผิดปกติของระบบภูมิคุ้มกันข้อใด",
+        options: [
+            "การหลั่งสารฮิสตามีนจากเกล็ดเลือด",
+            "การสะสมของ Immune complexes บริเวณผนังหลอดเลือด",
+            "การขาดเซลล์เม็ดเลือดขาว Neutrophil",
+            "การติดเชื้อไวรัส HIV"
+        ],
+        ans: 1,
+        exp: "Fibrinoid necrosis เกิดจากการที่สารประกอบภูมิคุ้มกัน (Antigen-antibody complexes) ร่วมกับ Fibrin ไปเกาะตกตะกอนที่ผนังหลอดเลือด"
+    },
+    {
+        ch: "ch5",
+        group: "core",
+        chName: "Neoplasia & มะเร็ง",
+        q: "20. [แนวข้อ 20] ผู้ป่วยมีก้อนเนื้อที่ต้นแขน คลำพบขอบเขตชัดเจน ขยับได้ และโตช้า มีแนวโน้มเป็นเนื้องอกชนิดใดมากที่สุด",
+        options: [
+            "Invasive carcinoma",
+            "Benign tumor (เช่น Lipoma หรือ Fibroma)",
+            "Osteosarcoma",
+            "Metastatic adenocarcinoma"
+        ],
+        ans: 1,
+        exp: "Benign tumor (เนื้องอกไม่ร้ายแรง) มักมี Fibrous capsule หุ้ม ขอบเขตเรียบชัดเจน ขยับได้ และไม่รุกรานเนื้อเยื่อรอบข้าง"
+    },
+    {
+        ch: "ch2",
+        group: "core",
+        chName: "การอักเสบ (Inflammation)",
+        q: "21. [แนวข้อ 21] บาดแผลถลอกมีน้ำเหลืองใสเยิ้มซึ่งเป็นสารน้ำที่มีโปรตีนและเซลล์เม็ดเลือดขาวออกมาจากการอักเสบ เรียกว่าอะไร",
+        options: [
+            "Transudate",
+            "Exudate",
+            "Edema fluid จากไตวาย",
+            "Chyle"
+        ],
+        ans: 1,
+        exp: "Exudate คือสารน้ำที่รั่วออกมาจากหลอดเลือดระหว่างการอักเสบ มีความถ่วงจำเพาะสูงและมีโปรตีนรวมถึงเม็ดเลือดขาวเข้มข้น"
+    },
+    {
+        ch: "ch2",
+        group: "core",
+        chName: "การอักเสบ (Inflammation)",
+        q: "22. [แนวข้อ 22] อาการผิวหนัง แดง และ ร้อน บริเวณแผลอักเสบ เกิดขึ้นจากกลไกทางสรีรวิทยาข้อใด",
+        options: [
+            "การหดเกร็งของหลอดเลือดแดง",
+            "การขยายตัวของหลอดเลือด (Vasodilation) ทำให้เลือดไหลเวียนมายังบริเวณนั้นมากขึ้น",
+            "การแตกทำลายของต่อมเหงื่อ",
+            "การสะสมของเม็ดสีเมลานิน"
+        ],
+        ans: 1,
+        exp: "อาการแดง (Redness) และร้อน (Heat) เป็นผลโดยตรงจากการขยายตัวของหลอดเลือดแดง (Vasodilation) ทำให้มีปริมาณเลือดไหลผ่านเข้ามามากและรวดเร็ว"
+    },
+    {
+        ch: "ch2",
+        group: "core",
+        chName: "การอักเสบ (Inflammation)",
+        q: "23. [แนวข้อ 23] ในระยะเริ่มต้นของการอักเสบ เม็ดเลือดขาวเคลื่อนที่ผ่านผนังหลอดเลือดออกไปยังเนื้อเยื่อ เรียกว่ากระบวนการใด",
+        options: [
+            "Margination",
+            "Emigration (หรือ Diapedesis)",
+            "Phagocytosis",
+            "Opsonization"
+        ],
+        ans: 1,
+        exp: "Emigration (Diapedesis) คือขั้นตอนที่เม็ดเลือดขาวบีบตัวแทรกผ่านรอยต่อของเซลล์บุผนังหลอดเลือดออกไปยังเนื้อเยื่อที่มีการบาดเจ็บ"
+    },
+    {
+        ch: "ch2",
+        group: "core",
+        chName: "การอักเสบ (Inflammation)",
+        q: "24. [แนวข้อ 24] การอักเสบทำให้หลอดเลือดมี Vascular permeability เพิ่มขึ้น ส่งผลให้เกิดอาการแสดงทางคลินิกข้อใดเด่นชัด",
+        options: [
+            "ผิวหนังแห้งซีด",
+            "อาการบวม (Swelling / Edema)",
+            "กล้ามเนื้อลีบ",
+            "กระดูกเปราะ"
+        ],
+        ans: 1,
+        exp: "เมื่อผนังหลอดเลือดมี Permeability เพิ่มขึ้น สารน้ำและโปรตีนจะรั่วซึมเข้าสู่ Interstitial tissue ก่อให้เกิดอาการบวม (Swelling / Edema)"
+    },
+    {
+        ch: "ch2",
+        group: "core",
+        chName: "การอักเสบ (Inflammation)",
+        q: "25. [แนวข้อ 25] การติดเชื้อแบคทีเรียเฉียบพลัน เม็ดเลือดขาวชนิดใดมีบทบาทเด่นที่สุดในการทำลายเชื้อโรคในระยะแรก",
+        options: [
+            "Lymphocyte",
+            "Neutrophil",
+            "Basophil",
+            "Eosinophil"
+        ],
+        ans: 1,
+        exp: "Neutrophil เป็นเซลล์เม็ดเลือดขาวด่านแรกที่ตอบสนองอย่างรวดเร็วและมีจำนวนมากที่สุดในการอักเสบเฉียบพลันจากการติดเชื้อแบคทีเรีย"
+    },
+    {
+        ch: "ch2",
+        group: "core",
+        chName: "การอักเสบ (Inflammation)",
+        q: "26. [แนวข้อ 26] ผู้ป่วยติดเชื้อ Mycobacteria เป็นเวลานาน ทำให้เกิดพยาธิสภาพการอักเสบรูปแบบใด",
+        options: [
+            "Acute serous inflammation",
+            "Chronic granulomatous inflammation",
+            "Acute hemorrhagic inflammation",
+            "Catarrhal inflammation"
+        ],
+        ans: 1,
+        exp: "การติดเชื้อ Mycobacterium tuberculosis ทำให้เกิด Chronic granulomatous inflammation ที่มีเซลล์ Epithelioid cells, Langhans giant cells และ Caseous necrosis"
+    },
+    {
+        ch: "ch2",
+        group: "core",
+        chName: "การอักเสบ (Inflammation)",
+        q: "27. [แนวข้อ 27] ปฏิกิริยาการตอบสนองเฉพาะที่ของเนื้อเยื่อต่อการบาดเจ็บหรือการติดเชื้อเพื่อกำจัดสิ่งแปลกปลอมและซ่อมแซม เรียกว่าอะไร",
+        options: [
+            "Necrosis",
+            "Inflammation (การอักเสบ)",
+            "Apoptosis",
+            "Metaplasia"
+        ],
+        ans: 1,
+        exp: "Inflammation (การอักเสบ) คือกระบวนการตอบสนองของร่างกายเพื่อกำจัดสาเหตุของการบาดเจ็บและเริ่มต้นกระบวนการซ่อมแซมเนื้อเยื่อ"
+    },
+    {
+        ch: "ch2",
+        group: "core",
+        chName: "การอักเสบ (Inflammation)",
+        q: "28. [แนวข้อ 28] การอักเสบที่มีหนองสะสมอยู่ (Suppurative inflammation) มักเกิดจากการติดเชื้อจุลชีพกลุ่มใด",
+        options: [
+            "ไวรัสไข้หวัดใหญ่",
+            "Pyogenic bacteria (เช่น Staphylococci)",
+            "พยาธิใบไม้",
+            "Prion"
+        ],
+        ans: 1,
+        exp: "Suppurative (Purulent) inflammation เกิดจากการติดเชื้อ Pyogenic bacteria ซึ่งกระตุ้นให้มี Neutrophil จำนวนมากจนเกิดเนื้อตายแบบเหลวข้น (Pus)"
+    },
+    {
+        ch: "ch7",
+        group: "core",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "29. [แนวข้อ 29] ผื่น บวม แดง ร้อน และคัน หลังสัมผัสสารก่อภูมิแพ้ เกิดจากการหลั่งสารใดจาก Mast cells",
+        options: [
+            "Histamine",
+            "Insulin",
+            "Albumin",
+            "Bilirubin"
+        ],
+        ans: 0,
+        exp: "Histamine ที่หลั่งจาก Mast cells ทำให้หลอดเลือดขยายตัว ซึมผ่านสารน้ำได้มาก และกระตุ้นปลายประสาททำให้เกิดอาการคันและบวมแดง"
+    },
+    {
+        ch: "ch2",
+        group: "core",
+        chName: "การอักเสบ (Inflammation)",
+        q: "30. [แนวข้อ 30] อาการปวดประจำเดือนเกิดจากการสร้างและหลั่งสาร Mediator ตัวใดที่ทำให้กล้ามเนื้อมดลูกบีบเกร็ง",
+        options: [
+            "Prostaglandins",
+            "Histamine",
+            "Complement C3",
+            "Nitric oxide"
+        ],
+        ans: 0,
+        exp: "Prostaglandins มีฤทธิ์กระตุ้นการหดรัดตัวของกล้ามเนื้อเรียบมดลูกและกระตุ้นเส้นประสาทรับความรู้สึกเจ็บปวด"
+    },
+    {
+        ch: "ch3",
+        group: "core",
+        chName: "Hemodynamics",
+        q: "31. [แนวข้อ 31] ออกกำลังกายหนัก กล้ามเนื้อน่องมีสีแดงและอุ่นขึ้นชั่วคราว การเปลี่ยนแปลงนี้เกิดจากข้อใด",
+        options: [
+            "Passive Congestion",
+            "Active Hyperemia",
+            "Venous Thrombosis",
+            "Ischemic necrosis"
+        ],
+        ans: 1,
+        exp: "Active Hyperemia เกิดจากการขยายตัวของหลอดเลือดแดงเพื่อส่งเลือดที่มีออกซิเจนและสารอาหารมายังกล้ามเนื้อที่กำลังทำงาน"
+    },
+    {
+        ch: "ch3",
+        group: "core",
+        chName: "Hemodynamics",
+        q: "32. [แนวข้อ 32] Renal artery thrombosis ตรวจพบเนื้อไตรูปร่างคล้ายสามเหลี่ยม/รูปลิ่มมีสีซีด เรียกว่าพยาธิสภาพใด",
+        options: [
+            "Red / Hemorrhagic infarct",
+            "Pale / White infarct",
+            "Venous congestion",
+            "Hematoma"
+        ],
+        ans: 1,
+        exp: "Pale (White) infarct เกิดจากการอุดตันของหลอดเลือดแดงในอวัยวะตันที่มีหลอดเลือดเลี้ยงทางเดียว เช่น ไตและหัวใจ"
+    },
+    {
+        ch: "ch3",
+        group: "core",
+        chName: "Hemodynamics",
+        q: "33. [แนวข้อ 33] ผู้ป่วยไมเกรนที่ใช้ยา Ergotamine มากเกินไป มีอาการเท้าเขียวคล้ำและปวดรุนแรง กลไกเริ่มต้นจากข้อใด",
+        options: [
+            "หลอดเลือดดำอุดตันจากพยาธิ",
+            "Severe arterial vasoconstriction (หลอดเลือดแดงหดตัวรุนแรง)",
+            "การขาดวิตามินซี",
+            "เกล็ดเลือดต่ำเฉียบพลัน"
+        ],
+        ans: 1,
+        exp: "Ergotamine ออกฤทธิ์ทำให้หลอดเลือดแดงหดเกร็งตัวอย่างรุนแรง (Arterial vasoconstriction) จนเนื้อเยื่อส่วนปลายขาดเลือด (Ischemia) และเกิดเนื้อตาย"
+    },
+    {
+        ch: "ch3",
+        group: "core",
+        chName: "Hemodynamics",
+        q: "34. [แนวข้อ 34] ผู้ป่วยบาดเจ็บกล้ามเนื้อรุนแรง (Rhabdomyolysis) มีปัสสาวะสีน้ำตาลเข้ม เกิดจากกลไกข้อใด",
+        options: [
+            "การหลั่ง Bilirubin สู่กระแสเลือด",
+            "Myoglobin รั่วจากกล้ามเนื้อเข้าสู่กระแสเลือดและกรองไปอุดตันท่อไต",
+            "การติดเชื้อไวรัสตับอักเสบ",
+            "การขาดโปรตีนในเลือด"
+        ],
+        ans: 1,
+        exp: "Rhabdomyolysis ทำให้ Myoglobin จากกล้ามเนื้อที่สลายตัวรั่วเข้าสู่กระแสเลือด กรองผ่านไตและตกตะกอนอุดตันท่อไต ทำให้ปัสสาวะมีสีน้ำตาลเข้ม"
+    },
+    {
+        ch: "ch3",
+        group: "core",
+        chName: "Hemodynamics",
+        q: "35. [แนวข้อ 35] นั่งเครื่องบินระยะยาวแล้วมีอาการปวดบวมที่ขาข้างเดียว คล้ายเส้นเลือดขอด พยาธิสภาพนี้นึกถึงโรคใด",
+        options: [
+            "Deep Vein Thrombosis (DVT)",
+            "Arterial embolism",
+            "Gas gangrene",
+            "Elephantiasis"
+        ],
+        ans: 0,
+        exp: "การนั่งนิ่งเป็นเวลานานทำให้เกิด Stasis of blood flow ในหลอดเลือดดำส่วนลึกของขา นำไปสู่ภาวะ Deep Vein Thrombosis (DVT)"
+    },
+    {
+        ch: "ch3",
+        group: "core",
+        chName: "Hemodynamics",
+        q: "36. [แนวข้อ 36] ผู้ป่วยไอออกมาเป็นเลือดสดจากระบบทางเดินหายใจ เรียกว่าอาการใด",
+        options: [
+            "Hematemesis",
+            "Hemoptysis",
+            "Melena",
+            "Hematuria"
+        ],
+        ans: 1,
+        exp: "Hemoptysis คือการไอเป็นเลือดสดจากทางเดินหายใจ ส่วน Hematemesis คือการอาเจียนเป็นเลือดจากทางเดินอาหาร"
+    },
+    {
+        ch: "ch6",
+        group: "core",
+        chName: "สิ่งแวดล้อมและโภชนาการ",
+        q: "37. [แนวข้อ 37] ผู้ป่วยแผลไฟไหม้บริเวณกว้างที่มีอาการปวดบวมอย่างรวดเร็ว ควรระวังภาวะแทรกซ้อนอันตรายใดมากที่สุด",
+        options: [
+            "Hypovolemic shock จากการสูญเสียสารน้ำออกนอกหลอดเลือด",
+            "ความดันโลหิตสูงเฉียบพลัน",
+            "ภาวะเลือดข้นเกินไปจนแข็งตัวไม่ได้",
+            "ตับวายจากสารพิษ"
+        ],
+        ans: 0,
+        exp: "แผลไฟไหม้รุนแรงจะทำให้หลอดเลือดซึมผ่านสารน้ำออกสู่ Interstitium มหาศาล เกิดภาวะ Hypovolemic shock ที่อันตรายถึงชีวิต"
+    },
+    {
+        ch: "ch3",
+        group: "core",
+        chName: "Hemodynamics",
+        q: "38. [แนวข้อ 38] รอยฟกช้ำที่เปลี่ยนเป็นสีเหลืองหรือสีน้ำตาลทอง เกิดจากการสะสมของสารใด",
+        options: [
+            "Hemoglobin",
+            "Bilirubin และ Hemosiderin",
+            "Biliverdin",
+            "Melanin"
+        ],
+        ans: 1,
+        exp: "การสลายตัวของเม็ดเลือดแดงในรอยช้ำระยะท้ายจะเปลี่ยน Biliverdin ไปเป็น Bilirubin และ Hemosiderin ซึ่งให้สีเหลืองและน้ำตาลทอง"
+    },
+    {
+        ch: "ch3",
+        group: "core",
+        chName: "Hemodynamics",
+        q: "39. [แนวข้อ 39] อาการบวมบุ๋มทั้งสองข้าง (Pitting edema) ในผู้ป่วยโรคตับ เกิดจากกลไกข้อใด",
+        options: [
+            "Increased oncotic pressure",
+            "Decreased plasma oncotic pressure จากภาวะ Hypoalbuminemia",
+            "Lymphatic obstruction",
+            "Arterial spasm"
+        ],
+        ans: 1,
+        exp: "ตับที่เสื่อมสภาพสร้าง Albumin ได้ลดลง ทำให้แรงดึงน้ำในหลอดเลือด (Plasma oncotic pressure) ลดลง สารน้ำจึงรั่วออกสู่เนื้อเยื่อเกิดบวมบุ๋ม"
+    },
+    {
+        ch: "ch5",
+        group: "core",
+        chName: "Neoplasia & มะเร็ง",
+        q: "40. [แนวข้อ 40] คำว่า 'Anaplasia' ในทางพยาธิวิทยามะเร็ง หมายถึงข้อใด",
+        options: [
+            "การเปลี่ยนแปลงชนิดของเซลล์แบบกลับคืนได้",
+            "การสูญเสียการเปลี่ยนแปลงสัณฐานและการทำหน้าที่ของเซลล์อย่างสิ้นเชิง (Lack of differentiation)",
+            "การที่เซลล์มีขนาดเท่ากันทุกเซลล์",
+            "การตายของเซลล์แบบ Apoptosis"
+        ],
+        ans: 1,
+        exp: "Anaplasia คือลักษณะของเซลล์มะเร็งชั้นสูงที่สูญเสีย Differentiation โดยสิ้นเชิง เซลล์มีรูปร่างผิดเพี้ยนไปจนไม่สามารถบอกเซลล์ต้นกำเนิดได้"
+    },
+    {
+        ch: "ch5",
+        group: "core",
+        chName: "Neoplasia & มะเร็ง",
+        q: "41. [แนวข้อ 41] กลไกของเชื้อไวรัส HPV ที่ทำให้เกิดมะเร็งปากมดลูก เกิดจากการทำงานของโปรตีนใด",
+        options: [
+            "E6 ยับยั้ง p53 และ E7 ยับยั้ง RB tumor suppressor proteins",
+            "E6 ยับยั้ง RB และ E7 ยับยั้ง p53",
+            "สร้างสารพิษทำลายดีเอ็นเอโดยตรง",
+            "ยับยั้งเอนไซม์ Cytochrome P450"
+        ],
+        ans: 0,
+        exp: "Oncoprotein E6 ของ HPV เข้าจับทำลาย p53 และ E7 เข้าจับยับยั้ง RB ทำให้เซลล์แบ่งตัวอย่างผิดปกติโดยไม่มีการควบคุม"
+    },
+    {
+        ch: "ch5",
+        group: "core",
+        chName: "Neoplasia & มะเร็ง",
+        q: "42. [แนวข้อ 42] ผู้ป่วยโรค Xeroderma pigmentosum เสี่ยงต่อการเป็นมะเร็งผิวหนังจากแสงแดด เนื่องจากระบบซ่อมแซม DNA ใดบกพร่อง",
+        options: [
+            "Mismatch repair system",
+            "Nucleotide excision repair pathway (ไม่สามารถซ่อม Pyrimidine dimers ได้)",
+            "Base excision repair",
+            "Homologous end joining"
+        ],
+        ans: 1,
+        exp: "Xeroderma pigmentosum มีความบกพร่องของ Nucleotide excision repair ทำให้เซลล์ไม่สามารถซ่อมแซม Pyrimidine dimers ที่เกิดจากรังสี UV ได้"
+    },
+    {
+        ch: "ch5",
+        group: "core",
+        chName: "Neoplasia & มะเร็ง",
+        q: "43. [แนวข้อ 43] เซลล์เนื้องอกที่มีขนาด รูปร่างแตกต่างกันหลากหลาย และนิวเคลียสติดสีเข้มจัด เรียกลักษณะดังกล่าวว่าอะไร",
+        options: [
+            "Hyperplasia และ Atrophy",
+            "Pleomorphism และ Nuclear hyperchromatism",
+            "Metaplasia และ Steatosis",
+            "Karyolysis"
+        ],
+        ans: 1,
+        exp: "Pleomorphism คือความหลากหลายของขนาดและรูปร่างเซลล์ ส่วน Hyperchromatism คือนิวเคลียสติดสีเข้มจากปริมาณ DNA ที่เพิ่มขึ้น"
+    },
+    {
+        ch: "ch6",
+        group: "core",
+        chName: "สิ่งแวดล้อมและโภชนาการ",
+        q: "44. [แนวข้อ 44] ผู้ป่วยมีอาการน้ำลายไหล รูม่านตาหด หัวใจเต้นช้า และกล้ามเนื้อกระตุกหลังฉีดยาฆ่าแมลง กลไกสำคัญเกิดจากข้อใด",
+        options: [
+            "Organophosphate ยับยั้งเอนไซม์ Acetylcholinesterase ทำให้ Acetylcholine คั่ง",
+            "สารตะกั่วทำลายไขกระดูก",
+            "การขาดออกซิเจนในเม็ดเลือดแดง",
+            "เซลล์ตับถูกทำลายด้วย NAPQI"
+        ],
+        ans: 0,
+        exp: "Organophosphate ยับยั้งเอนไซม์ AChE ส่งผลให้เกิดการกระตุ้นตัวรับ Muscarinic และ Nicotinic มากเกินไป (SLUDGE syndrome)"
+    },
+    {
+        ch: "ch6",
+        group: "core",
+        chName: "สิ่งแวดล้อมและโภชนาการ",
+        q: "45. [แนวข้อ 45] รับประทานยาเบื่อหนูที่มีสารกลุ่ม Warfarin ทำให้มีจ้ำเลือดและเลือดออกไม่หยุด ควรใช้สารใดเป็นยาต้านพิษ (Antidote)",
+        options: [
+            "Vitamin C",
+            "Vitamin K",
+            "N-acetylcysteine",
+            "Atropine"
+        ],
+        ans: 1,
+        exp: "Warfarin ออกฤทธิ์ต้าน Vitamin K การให้ Vitamin K จะช่วยให้ตับกลับมาสร้าง Clotting factors (II, VII, IX, X) ได้ตามปกติ"
+    },
+    {
+        ch: "ch6",
+        group: "core",
+        chName: "สิ่งแวดล้อมและโภชนาการ",
+        q: "46. [แนวข้อ 46] ยาพาราเซตามอลก่อพิษต่อตับผ่านสารตัวกลางชนิดใดเมื่อเกิดภาวะ Glutathione หมดไป",
+        options: [
+            "Acetaldehyde",
+            "NAPQI (N-acetyl-p-benzoquinone imine)",
+            "Formaldehyde",
+            "Carbon monoxide"
+        ],
+        ans: 1,
+        exp: "NAPQI เป็นสารพิษตัวกลางที่เกิดจากการเผาผลาญพาราเซตามอล เมื่อ Glutathione หมดจะทำให้เซลล์ตับเกิด Necrosis"
+    },
+    {
+        ch: "ch6",
+        group: "core",
+        chName: "สิ่งแวดล้อมและโภชนาการ",
+        q: "47. [แนวข้อ 47] ตรวจพบชิ้นเนื้อปอดมีพังผืดและเส้นใยบางยาว (Fibers) คั่งค้าง สัมพันธ์กับการวินิจฉัยโรคใด",
+        options: [
+            "Silicosis",
+            "Asbestosis (โรคปอดจากแร่ใยหิน)",
+            "Anthracosis",
+            "Berylliosis"
+        ],
+        ans: 1,
+        exp: "Asbestosis มีลักษณะเฉพาะคือการสะสมของเส้นใยแร่ใยหิน (Asbestos fibers) ในเนื้อปอดและเยื่อหุ้มปอดหนาตัว"
+    },
+    {
+        ch: "ch1",
+        group: "core",
+        chName: "บทนำและเทคนิคพยาธิวิทยา",
+        q: "48. [แนวข้อ 48] แหล่งสะสมหลักของไขมันในร่างกายที่มักพบการเปลี่ยนแปลงแบบ Fatty change เมื่อเกิดการบาดเจ็บคืออวัยวะใด",
+        options: [
+            "สมอง",
+            "ตับ (Liver)",
+            "ไต",
+            "ม้าม"
+        ],
+        ans: 1,
+        exp: "ตับเป็นอวัยวะหลักในการเผาผลาญไขมัน เมื่อเซลล์ตับบาดเจ็บจะพบการสะสมของหยดไขมัน (Fatty change / Steatosis) ได้ชัดเจนที่สุด"
+    },
+    {
+        ch: "ch6",
+        group: "core",
+        chName: "สิ่งแวดล้อมและโภชนาการ",
+        q: "49. [แนวข้อ 49] นักวิ่งหมดสติกลางแดด อุณหภูมิกาย 41.2°C กลไกหลักของ Heat stroke ในระดับเซลล์คือข้อใด",
+        options: [
+            "Protein denaturation และ Vascular endothelial damage",
+            "การสะสมของสารตะกั่ว",
+            "ขาดวิตามินเอ",
+            "ภาวะเม็ดเลือดขาวต่ำ"
+        ],
+        ans: 0,
+        exp: "ความร้อนที่สูงเกิน 40°C ทำให้โปรตีนในเซลล์เสียสภาพ (Protein denaturation), เซลล์เยื่อบุหลอดเลือดเสียหาย และเกิด Multi-organ dysfunction"
+    },
+    {
+        ch: "ch6",
+        group: "core",
+        chName: "สิ่งแวดล้อมและโภชนาการ",
+        q: "50. [แนวข้อ 50] เด็กที่ขาดสารอาหารโปรตีนอย่างรุนแรงแต่ได้คาร์โบไฮเดรต มีอาการบวมน้ำ ท้องป่อง และตับโต คือโรคใด",
+        options: [
+            "Marasmus",
+            "Kwashiorkor",
+            "Scurvy",
+            "Rickets"
+        ],
+        ans: 1,
+        exp: "Kwashiorkor เป็นโรคขาดโปรตีน ทำให้ระดับ Albumin ต่ำ เกิดอาการบวมน้ำ ท้องป่อง และ Fatty liver"
+    },
+    {
+        ch: "ch6",
+        group: "core",
+        chName: "สิ่งแวดล้อมและโภชนาการ",
+        q: "51. [แนวข้อ 51] หญิงที่วางแผนตั้งครรภ์ควรรับประทานวิตามินใดเพื่อป้องกันความพิการแต่กำเนิดทางระบบประสาท (Neural tube defects)",
+        options: [
+            "Vitamin A",
+            "Folic acid (Vitamin B9)",
+            "Vitamin C",
+            "Vitamin D"
+        ],
+        ans: 1,
+        exp: "Folic acid (Vitamin B9) มีความสำคัญต่อการสร้างหลอดประสาทของตัวอ่อนในครรภ์ ช่วยป้องกันภาวะ Neural tube defects"
+    },
+    {
+        ch: "ch6",
+        group: "core",
+        chName: "สิ่งแวดล้อมและโภชนาการ",
+        q: "52. [แนวข้อ 52] ทารกที่มีกลุ่มอาการ Fetal Alcohol Syndrome (FAS) มักมีลักษณะทางกายภาพตามข้อใด",
+        options: [
+            "ศีรษะเล็ก (Microcephaly), ร่องเหนือริมฝีปากบนเรียบ (Smooth philtrum) และริมฝีปากบนบาง",
+            "ศีรษะโตผิดปกติ ตาโปน",
+            "กรามใหญ่ ฟันซ้อนเก",
+            "แขนขายาวเกินปกติ"
+        ],
+        ans: 0,
+        exp: "FAS มีลักษณะเด่นคือ Microcephaly, Small palpebral fissures, Smooth philtrum และ Thin upper lip"
+    },
+    {
+        ch: "ch7",
+        group: "core",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "53. [แนวข้อ 53] เซลล์ชนิดใดในระบบภูมิคุ้มกันที่ทำหน้าที่สร้างและหลั่งแอนติบอดีเพื่อจับกับเชื้อโรค",
+        options: [
+            "T-helper cell",
+            "Plasma cell (พัฒนามาจาก B cell)",
+            "Neutrophil",
+            "Macrophage"
+        ],
+        ans: 1,
+        exp: "B lymphocyte เมื่อได้รับการกระตุ้นจากแอนติเจนจะพัฒนาเป็น Plasma cell เพื่อสร้างและหลั่งแอนติบอดี (Immunoglobulins)"
+    },
+    {
+        ch: "ch7",
+        group: "core",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "54. [แนวข้อ 54] การทดสอบ PPD (Tuberculin skin test) สำหรับวัณโรค เกิดจากปฏิกิริยาของเซลล์ชนิดใด",
+        options: [
+            "IgE และ Basophils",
+            "CD4+ T cells และ Macrophages (Type IV Hypersensitivity)",
+            "เกล็ดเลือด",
+            "B cells สร้างแอนติบอดีทำลายทันที"
+        ],
+        ans: 1,
+        exp: "PPD test เป็น Delayed-type hypersensitivity (Type IV) ที่อาศัยการทำงานของ Sensitized CD4+ T cells และ Macrophages"
+    },
+    {
+        ch: "ch7",
+        group: "core",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "55. [แนวข้อ 55] ผู้ป่วยแพ้ถั่วลิสง รับประทานแล้ว 15 นาทีเกิดผื่น ผิวหนังแดง หายใจลำบาก จัดเป็นภูมิไวเกินชนิดใด",
+        options: [
+            "Type I Hypersensitivity (Immediate / Anaphylaxis)",
+            "Type II Hypersensitivity",
+            "Type III Hypersensitivity",
+            "Type IV Hypersensitivity"
+        ],
+        ans: 0,
+        exp: "การแพ้อาหารเฉียบพลันเกิดจากแอนติบอดี IgE บนผิว Mast cell ทำให้หลั่ง Histamine ภายในไม่กี่นาที จัดเป็น Type I Hypersensitivity"
+    },
+    {
+        ch: "ch7",
+        group: "core",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "56. [แนวข้อ 56] ผู้ป่วยโรค AIHA มีแอนติบอดีจับกับแอนติเจนบนเม็ดเลือดแดงทำให้เม็ดเลือดแดงแตก จัดเป็น Hypersensitivity ชนิดใด",
+        options: [
+            "Type I",
+            "Type II (Antibody-mediated hypersensitivity)",
+            "Type III",
+            "Type IV"
+        ],
+        ans: 1,
+        exp: "Type II Hypersensitivity เกิดจากแอนติบอดี (IgG หรือ IgM) เข้าจับกับแอนติเจนบนผิวเซลล์เป้าหมายโดยตรงและกระตุ้นการทำลายเซลล์"
+    },
+    {
+        ch: "ch7",
+        group: "core",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "57. [แนวข้อ 57] อาการไข้ ปวดสีข้าง และปัสสาวะสีแดงหลังการให้เลือดผิดหมู่ เกิดจากกลไกข้อใด",
+        options: [
+            "Transfusion reaction โดยแอนติบอดีทำลายเม็ดเลือดแดงแตกในหลอดเลือดและเกิด Hemoglobinuria",
+            "การติดเชื้อแบคทีเรียในกระเพาะปัสสาวะ",
+            "การขาดน้ำอย่างรุนแรง",
+            "เกล็ดเลือดทำงานผิดปกติ"
+        ],
+        ans: 0,
+        exp: "การให้เลือดผิดหมู่ (ABO incompatibility) ทำให้เกิดปฏิกิริยา Type II Hypersensitivity เม็ดเลือดแดงแตกเฉียบพลัน ปล่อย Hemoglobin ออกมาในปัสสาวะและกระตุ้นการอักเสบทั่วร่างกาย"
+    },
+    {
+        ch: "ch7",
+        group: "core",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "58. [แนวข้อ 58] ภาวะ Autoimmunity (โรคภูมิต้านทานตนเอง) เกิดขึ้นจากความผิดปกติของระบบภูมิคุ้มกันในข้อใด",
+        options: [
+            "การสูญเสียภาวะ Self-tolerance ทำให้ระบบภูมิคุ้มกันเข้าทำลายเนื้อเยื่อตนเอง",
+            "ร่างกายสร้างเม็ดเลือดขาวไม่ได้",
+            "ไขกระดูกไม่สร้างเกล็ดเลือด",
+            "การได้รับวัคซีนมากเกินไป"
+        ],
+        ans: 0,
+        exp: "Autoimmunity เกิดจากความล้มเหลวของกลไก Self-tolerance ทำให้ T cells และ B cells จดจำเนื้อเยื่อของตนเองว่าเป็นสิ่งแปลกปลอม"
+    },
+    {
+        ch: "ch7",
+        group: "core",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "59. [แนวข้อ 59] ผู้ป่วยติดเชื้อไวรัส HIV เกิดภาวะภูมิคุ้มกันบกพร่องรุนแรงเนื่องจากสาเหตุใด",
+        options: [
+            "ไวรัสเข้าทำลายเซลล์ CD4+ T helper cells ทำให้ภูมิคุ้มกันล้มเหลว",
+            "ไวรัสทำลายเซลล์ตับจนสร้างโปรตีนไม่ได้",
+            "ไวรัสทำให้หลอดเลือดแตก",
+            "ไวรัสทำลายเฉพาะเซลล์กล้ามเนื้อ"
+        ],
+        ans: 0,
+        exp: "HIV เข้าจับกับตัวรับ CD4 บนผิว T helper cells และทำลายเซลล์เหล่านี้อย่างต่อเนื่อง ส่งผลให้เกิดภาวะภูมิคุ้มกันบกพร่องและการติดเชื้อฉวยโอกาส"
+    },
+    {
+        ch: "ch2",
+        group: "core",
+        chName: "การอักเสบ (Inflammation)",
+        q: "60. [แนวข้อ 60] เมื่อเนื้อเยื่อเกิดการอักเสบ เซลล์ชนิดใดที่ทำหน้าที่เป็น Sentinel cells คอยรับรู้สิ่งแปลกปลอมและหลั่งสาร Mediator ในระยะเริ่มต้น",
+        options: [
+            "Macrophages, Mast cells และ Dendritic cells ในเนื้อเยื่อ",
+            "เซลล์เม็ดเลือดแดง",
+            "เซลล์กระดูก",
+            "เซลล์ประสาท"
+        ],
+        ans: 0,
+        exp: "Sentinel cells ประจำเนื้อเยื่อ ได้แก่ Macrophages, Dendritic cells และ Mast cells จะทำหน้าที่ตรวจจับจุลชีพและหลั่งสารเคมีเริ่มต้นกระบวนการอักเสบ"
+    },
 
-// ==========================================
-// 2. ฐานข้อมูลชุดที่ 1 (คลังข้อสอบตามบท 100 ข้อ)
-// ==========================================
-const rawSet1 = [
-    // ดึงมาจาก 100 ข้อเต็มตามระบบเดิม
-    ...rawSet2,
-    { chName: "บทนำพยาธิวิทยา", q: "61. กล้องจุลทรรศน์ชนิดใดเหมาะสำหรับการตรวจดูภาพพื้นผิวของตัวอย่างในลักษณะ 3 มิติ", options: ["Light microscope", "Scanning Electron Microscope (SEM)", "Transmission Electron Microscope (TEM)", "Phase contrast microscope"], correctIndex: 1, exp: "SEM ใช้ลำแสงอิเล็กตรอนสแกนบนพื้นผิววัตถุ ทำให้มองเห็นภาพโครงสร้าง 3 มิติได้อย่างคมชัด" },
-    { chName: "การอักเสบ (Inflammation)", q: "62. ข้อใดเป็นลักษณะเปรียบเทียบที่ถูกต้องระหว่าง Acute inflammation และ Chronic inflammation", options: ["Acute เริ่มมีอาการช้า กินเวลาเป็นเดือน", "Acute มีเซลล์แทรกซึมเด่นคือ Neutrophils ส่วน Chronic มีเซลล์เด่นคือ Macrophages และ Lymphocytes", "Chronic มีอาการบวมแดงร้อนเด่นชัดกว่า Acute", "Acute ทำให้เกิดพังผืดมากกว่า Chronic"], correctIndex: 1, exp: "Acute inflammation เกิดขึ้นเร็วและมี Neutrophil เป็นเซลล์เด่น ส่วน Chronic inflammation เกิดขึ้นช้า ดำเนินโรคนาน และมี Mononuclear cells เป็นเซลล์เด่น" },
-    { chName: "Hemodynamics", q: "63. ภาวะเลือดออกที่มีขนาดเส้นผ่านศูนย์กลาง 3 มิลลิเมตร ถึง 1 เซนติเมตร เรียกว่าอะไร", options: ["Petechiae", "Purpura", "Ecchymosis", "Hematoma"], correctIndex: 1, exp: "Purpura มีขนาดระหว่าง 3 มม. ถึง 1 ซม. (Petechiae < 3 มม. และ Ecchymosis > 1 ซม.)" },
-    { chName: "Cell Injury & Death", q: "64. การเปลี่ยนแปลงทางนิวเคลียสที่นิวเคลียสละลายจางหายไปอย่างสมบูรณ์ เรียกว่าอะไร", options: ["Pyknosis", "Karyorrhexis", "Karyolysis", "Apoptosis"], correctIndex: 2, exp: "Karyolysis คือการที่ Chromatin และนิวเคลียสถูกเอนไซม์ย่อยสลายจนละลายจางหายไป" },
-    { chName: "Cell Injury & Death", q: "65. ข้อใดเป็นตัวอย่างของ Programmed (Physiologic) apoptosis ตามธรรมชาติของร่างกาย", options: ["การลอกหลุดของเยื่อบุโพรงมดลูกในรอบประจำเดือน", "การฝ่อของต่อมไทมัสเมื่อเข้าสู่วัยผู้ใหญ่", "การสลายตัวของเซลล์ต่อมน้ำนมหลังหยุดให้นมบุตร", "ถูกทุกข้อ"], correctIndex: 3, exp: "ตัวอย่างสรีรวิทยาของ Apoptosis ได้แก่ การหลุดลอกของเยื่อบุมดลูกในรอบเดือน, การฝ่อของต่อมไทมัส และการยุบตัวของต่อมน้ำนมหลังหย่านม" },
-    { chName: "Cell Injury & Death", q: "66. การตายแบบ Gangrene ชนิด Wet gangrene แตกต่างจาก Dry gangrene ในข้อใด", options: ["Wet gangrene มีการติดเชื้อแบคทีเรียแทรกซ้อน ทำให้เนื้อเยื่อบวม ชุ่ม และมีกลิ่นเหม็นเน่า", "Wet gangrene เกิดจากการขาดเลือดโดยไม่มีเชื้อโรค", "Dry gangrene มีลักษณะเป็นตุ่มน้ำใส", "Wet gangrene พบเฉพาะที่สมอง"], correctIndex: 0, exp: "Wet gangrene เกิดจากการที่เนื้อเยื่อขาดเลือดและมีแบคทีเรียเข้ามารุกราน ทำให้เกิดการเน่าเปื่อย บวมน้ำ และมีกลิ่นเหม็น" },
-    { chName: "Neoplasia & มะเร็ง", q: "67. เนื้องอกไม่ร้ายแรง (Benign) ของเนื้อเยื่อกระดูก เรียกว่าอะไร", options: ["Osteoma", "Osteosarcoma", "Chondroma", "Fibroma"], correctIndex: 0, exp: "Osteoma คือเนื้องอกไม่ร้ายแรงของกระดูก (หากเป็นมะเร็งกระดูกจะเรียกว่า Osteosarcoma)" },
-    { chName: "Neoplasia & มะเร็ง", q: "68. เนื้องอกของหลอดเลือดชนิดไม่ร้ายแรง เรียกว่าอะไร", options: ["Angiosarcoma", "Hemangioma", "Lymphangioma", "Leiomyoma"], correctIndex: 1, exp: "Hemangioma (หรือ Angioma) คือเนื้องอกหลอดเลือดชนิดไม่ร้ายแรง" },
-    { chName: "Neoplasia & มะเร็ง", q: "69. เนื้องอกที่มีลักษณะเป็นถุงน้ำขนาดใหญ่และมีโครงสร้าง เช่น เส้นผม ไขมัน หรือฟันอยู่ภายใน คือข้อใด", options: ["Adenoma", "Dermoid cyst (Cystadenoma / Teratoma)", "Polyp", "Papilloma"], correctIndex: 1, exp: "Dermoid cyst (Cystadenoma) เป็นเนื้องอกถุงน้ำที่มักพบในรังไข่ มีองค์ประกอบของผิวหนัง เส้นผม และฟัน" },
-    { chName: "Neoplasia & มะเร็ง", q: "70. ติ่งเนื้อที่ยื่นออกมาจากผนังเยื่อบุผิว เช่น ในลำไส้ใหญ่ เรียกว่าอะไร", options: ["Ulcer", "Polyp", "Sarcoma", "Carcinoma"], correctIndex: 1, exp: "Polyp คือก้อนเนื้อหรือติ่งเนื้อที่ยื่นนูนออกมาจากพื้นผิวเยื่อบุ" },
-    { chName: "Neoplasia & มะเร็ง", q: "71. การแพร่กระจายของมะเร็งกลุ่ม Sarcoma มักแพร่กระจายผ่านทางเส้นทางใดเป็นหลัก", options: ["ระบบน้ำเหลือง", "กระแสเลือด (Hematologic spread) โดยเฉพาะทางหลอดเลือดดำ", "ทางเดินอาหาร", "ระบบประสาท"], correctIndex: 1, exp: "มะเร็งกลุ่ม Sarcoma (มะเร็งเนื้อเยื่อเกี่ยวพัน) มักรุกรานเข้าสู่หลอดเลือดดำและแพร่กระจายไปตามกระแสเลือดสู่อวัยวะ เช่น ปอดและตับ" },
-    { chName: "Neoplasia & มะเร็ง", q: "72. ภาวะน้ำในช่องท้องที่เต็มไปด้วยสารเมือกจากมะเร็งรังไข่ที่แพร่กระจายในช่องท้อง เรียกว่าอะไร", options: ["Ascites ธรรมดา", "Pseudomyxoma peritonei", "Peritonitis", "Hemoperitoneum"], correctIndex: 1, exp: "Pseudomyxoma peritonei คือภาวะที่มีสารเมือกและเซลล์มะเร็งกระจายเต็มช่องเยื่อบุช่องท้อง" },
-    { chName: "สิ่งแวดล้อมและโภชนาการ", q: "73. สารต้านอนุมูลอิสระ (Antioxidants) กลุ่มที่ละลายในไขมัน (Lipid-soluble) ได้แก่วิตามินข้อใด", options: ["Vitamin B1 และ B2", "Vitamin C และ Glutathione", "Vitamin A, Vitamin E, Beta-carotene", "Uric acid"], correctIndex: 2, exp: "สารต้านอนุมูลอิสระที่ละลายในไขมันได้แก่ Vitamin A, Vitamin E, Beta-carotene และ Lycopene" },
-    { chName: "สิ่งแวดล้อมและโภชนาการ", q: "74. การขาดวิตามินดี (Vitamin D) ในผู้ใหญ่ทำให้เกิดภาวะกระดูกนิ่มและบาง เรียกว่าอะไร", options: ["Rickets", "Osteomalacia", "Osteosarcoma", "Scurvy"], correctIndex: 1, exp: "การขาดวิตามินดีในผู้ใหญ่เรียกว่า Osteomalacia ส่วนในเด็กเรียกว่า Rickets" },
-    { chName: "สิ่งแวดล้อมและโภชนาการ", q: "75. โรคเหน็บชา (Beriberi) เกิดจากการขาดวิตามินชนิดใด", options: ["Vitamin B1 (Thiamine)", "Vitamin B2 (Riboflavin)", "Vitamin B3 (Niacin)", "Vitamin C"], correctIndex: 0, exp: "การขาด Vitamin B1 (Thiamine) ทำให้เกิดโรคเหน็บชา (Beriberi)" },
-    { chName: "สิ่งแวดล้อมและโภชนาการ", q: "76. การขาดวิตามินบี 3 (Niacin) นำไปสู่โรคผิวหนังอักเสบ ท้องเสีย และสมองเสื่อม ที่รู้จักในชื่อโรคอะไร", options: ["Scurvy", "Pellagra", "Rickets", "Night blindness"], correctIndex: 1, exp: "การขาด Niacin ทำให้เกิดโรค Pellagra ซึ่งมีอาการเด่นคือ 3D: Dermatitis, Diarrhea, Dementia" },
-    { chName: "สิ่งแวดล้อมและโภชนาการ", q: "77. เส้นสีฟ้าอมเทาที่ขอบเหงือก (Lead lines) สัมพันธ์กับภาวะพิษจากโลหะหนักชนิดใด", options: ["Mercury", "Lead (สารตะกั่ว)", "Cadmium", "Arsenic"], correctIndex: 1, exp: "Lead lines บนขอบเหงือกเกิดจากปฏิกิริยาของสารตะกั่วกับแบคทีเรียในช่องปาก เป็นลักษณะเฉพาะของ Lead poisoning" },
-    { chName: "สิ่งแวดล้อมและโภชนาการ", q: "78. บาดแผลที่เกิดจากแรงกระแทกของวัตถุไม่มีคม ทำให้เนื้อเยื่อฉีกขาด ขอบแผลกะรุ่งกะริ่ง เรียกว่าอะไร", options: ["Incised wound", "Laceration", "Abrasion", "Puncture wound"], correctIndex: 1, exp: "Laceration คือแผลฉีกขาดจากวัตถุไม่มีคม มีขอบแผลไม่เรียบและกะรุ่งกะริ่ง" },
-    { chName: "สิ่งแวดล้อมและโภชนาการ", q: "79. บาดแผลที่เกิดจากของมีคมบาด ขอบแผลเรียบกริบ เรียกว่าอะไร", options: ["Abrasion", "Incised wound", "Laceration", "Contusion"], correctIndex: 1, exp: "Incised wound คือบาดแผลตัดเรียบจากของมีคม เช่น มีดผ่าตัด" },
-    { chName: "สิ่งแวดล้อมและโภชนาการ", q: "80. รอยถลอกของผิวหนังชั้นนอกที่เกิดจากการครูดหรือเสียดสี เรียกว่าอะไร", options: ["Abrasion", "Contusion", "Laceration", "Puncture"], correctIndex: 0, exp: "Abrasion คือแผลถลอกที่ผิวหนังชั้นกำพร้าหลุดลอกจากการเสียดสี" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "81. สิ่งมีชีวิตก่อโรคกลุ่มใดที่มีขนาดเล็กที่สุดและไม่มีสารพันธุกรรม", options: ["Viruses", "Bacteria", "Prions", "Fungi"], correctIndex: 2, exp: "Prion มีขนาดเล็กกว่า 20 นาโนเมตร และประกอบด้วยโปรตีนที่ผิดรูปโดยไม่มี DNA หรือ RNA" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "82. ไวรัสที่ติดเชื้อและแบ่งตัวเพิ่มจำนวนภายในเซลล์ของแบคทีเรีย เรียกว่าอะไร", options: ["Retrovirus", "Bacteriophage", "Prion", "Plasmid"], correctIndex: 1, exp: "Bacteriophage คือไวรัสที่ก่อการติดเชื้อและเพิ่มจำนวนในเซลล์แบคทีเรีย" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "83. ไวรัส SARS-CoV-2 เข้าสู่เซลล์เยื่อบุทางเดินหายใจของมนุษย์โดยการจับกับตัวรับชนิดใด", options: ["CD4 receptor", "ACE2 receptor", "Insulin receptor", "Acetylcholine receptor"], correctIndex: 1, exp: "SARS-CoV-2 ใช้ Spike protein จับกับตัวรับ ACE2 บนผิวเซลล์เยื่อบุทางเดินหายใจ" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "84. การตรวจพบ Ground-glass inclusion ในเซลล์ตับสัมพันธ์กับเชื้อไวรัสชนิดใด", options: ["Hepatitis A", "Hepatitis B virus (HBV)", "Hepatitis C", "HIV"], correctIndex: 1, exp: "Ground-glass hepatocytes เกิดจากการสะสมของ Hepatitis B surface antigen (HBsAg)" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "85. เชื้อแบคทีเรียชนิดใดเป็นสาเหตุของโรคกระเพาะอาหารและลำไส้อักเสบจากการรับประทานเนื้อสัตว์ปีกและไข่ที่ไม่สุก", options: ["Salmonella spp.", "Vibrio cholerae", "Bacillus anthracis", "Clostridium botulinum"], correctIndex: 0, exp: "Salmonella ปนเปื้อนในเนื้อสัตว์ปีกและไข่ดิบ ก่อให้เกิดอาการอาหารเป็นพิษ อุจจาระร่วง และปวดท้อง" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "86. สารพิษ Exotoxin ของ Clostridium botulinum มีผลต่อร่างกายอย่างไร", options: ["ทำให้เม็ดเลือดแดงแตก", "เป็น Neurotoxin ยับยั้งการหลั่งสารสื่อประสาท ทำให้กล้ามเนื้อเป็นอัมพาตอ่อนปวกเปียก", "ทำลายท่อไต", "ทำให้เกิดตับแข็ง"], correctIndex: 1, exp: "Botulinum toxin ยับยั้งการหลั่ง Acetylcholine ทำให้กล้ามเนื้อเป็นอัมพาตและนำมาประยุกต์ใช้ทำโบท็อกซ์ (Botox)" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "87. เชื้อราในกลุ่ม Dermatophytes เช่น ที่ก่อโรคน้ำกัดเท้า (Tinea pedis) ก่อโรคที่บริเวณใด", options: ["อวัยวะภายใน", "ผิวหนังชั้นนอกและเคราติน", "กระแสเลือด", "สมอง"], correctIndex: 1, exp: "Dermatophytes เป็นเชื้อราผิวหนังที่อาศัยเคราตินบนผิวหนัง เล็บ และเส้นผม" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "88. การติดเชื้อพยาธิชนิดใดที่ติดต่อผ่านการรับประทานปลาน้ำจืดเกล็ดขาวแบบสุก ๆ ดิบ ๆ", options: ["พยาธิตัวตืด", "พยาธิใบไม้ตับ (Liver fluke)", "พยาธิปากขอ", "พยาธิเส้นด้าย"], correctIndex: 1, exp: "พยาธิใบไม้ตับพบในปลาน้ำจืดมีเกล็ดในประเทศไทย เป็นสาเหตุสำคัญของโรคมะเร็งท่อน้ำดี" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "89. การติดเชื้อผ่านทางรกจากมารดาสู่ทารกในครรภ์ เรียกว่าการถ่ายทอดแบบใด", options: ["Congenital / Transplacental transmission", "Airborne transmission", "Fomite transmission", "Direct contact"], correctIndex: 0, exp: "Transplacental transmission คือการแพร่เชื้อผ่านรกจากแม่สู่ลูก เช่น หัดเยอรมัน และ HIV" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "90. การติดเชื้อทางอ้อมที่เกิดจากเครื่องมือทางการแพทย์ที่ไม่สะอาด เช่น การคาสายสวนปัสสาวะ เรียกว่าอะไร", options: ["Airborne", "Fomite transmission", "Vector transmission", "Congenital"], correctIndex: 1, exp: "Fomite คือสิ่งของหรือเครื่องมือที่ปนเปื้อนเชื้อโรคและนำพาเชื้อเข้าสู่ร่างกาย" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "91. การติดเชื้อที่แพร่กระจายไปทั่วร่างกายผ่านกระแสเลือดหรือน้ำเหลือง เรียกว่าอะไร", options: ["Localized infection", "Disseminated / Systemic infection", "Latent infection", "Subclinical infection"], correctIndex: 1, exp: "Systemic / Disseminated infection คือการติดเชื้อที่แพร่กระจายไปทั่วร่างกาย" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "92. ภาวะไฟลามทุ่ง (Erysipelas) ที่ผิวหนังชั้นหนังแท้ เกิดจากการติดเชื้อแบคทีเรียชนิดใด", options: ["Streptococcus pyogenes", "Escherichia coli", "Vibrio cholerae", "Mycoplasma"], correctIndex: 0, exp: "Streptococcus pyogenes เป็นสาเหตุสำคัญของ Erysipelas (ไฟลามทุ่ง) ที่ชั้น Dermis" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "93. การเจาะเลือดส่งตรวจ Hemoculture ควรปฏิบัติตามมาตรฐานสากลข้อใด", options: ["เจาะเก็บเป็นลำดับแรกสุด (First order of draw) ด้วยเทคนิคปลอดเชื้อ", "เจาะเก็บหลังหลอด EDTA", "เขย่าหลอดแรงๆ", "เก็บเฉพาะเลือดดำส่วนปลาย"], correctIndex: 0, exp: "Blood culture ต้องเจาะเป็นลำดับแรกเสมอเพื่อป้องกันการปนเปื้อนของเชื้อแบคทีเรียภายนอก" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "94. ภาวะเม็ดเลือดขาว Neutrophil ในกระแสเลือดเพิ่มจำนวนสูงขึ้นเพื่อตอบสนองต่อการติดเชื้อแบคทีเรีย เรียกว่าอะไร", options: ["Neutropenia", "Neutrophilic leukocytosis", "Thrombocytopenia", "Eosinophilia"], correctIndex: 1, exp: "Neutrophilic leukocytosis คือการเพิ่มจำนวนของ Neutrophils ในเลือดเพื่อต่อสู้กับการติดเชื้อ" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "95. การติดเชื้อฉวยโอกาสและมะเร็งทุติยภูมิที่พบบ่อยในผู้ป่วยระยะ AIDS คือข้อใด", options: ["Kaposi sarcoma และ Pneumocystis pneumonia", "Osteosarcoma", "Melanoma", "Hepatoma"], correctIndex: 0, exp: "ผู้ป่วย AIDS มักพบการติดเชื้อฉวยโอกาสและมะเร็ง Kaposi sarcoma จากการที่เซลล์ภูมิคุ้มกันถูกทำลาย" },
-    { chName: "Hemodynamics", q: "96. ภาวะหลอดเลือดแดงโป่งพองแบบกระเปาะรอบเส้นรอบวง เรียกว่าอะไร", options: ["Saccular aneurysm", "Fusiform aneurysm", "Dissecting aneurysm", "False aneurysm"], correctIndex: 1, exp: "Fusiform aneurysm คือการโป่งพองออกสม่ำเสมอรอบเส้นรอบวงของหลอดเลือด" },
-    { chName: "Hemodynamics", q: "97. การถ่ายอุจจาระเป็นเลือดสดหรือมีลิ่มเลือดปน มักบ่งชี้ถึงภาวะเลือดออกจากส่วนใด", options: ["Upper GI bleeding", "Lower GI bleeding (Hematochezia)", "ทางเดินหายใจ", "กระเพาะปัสสาวะ"], correctIndex: 1, exp: "Hematochezia คือการถ่ายอุจจาระเป็นเลือดสด มักมีสาเหตุมาจากเลือดออกในทางเดินอาหารส่วนล่าง" },
-    { chName: "Hemodynamics", q: "98. การถ่ายอุจจาระเป็นสีดำเหนียวคล้ายยางมะตอย เรียกว่าอะไร", options: ["Hematochezia", "Melena", "Hemoptysis", "Hematemesis"], correctIndex: 1, exp: "Melena คืออุจจาระสีดำเข้มจากเลือดที่ถูกกรดและเอนไซม์ในทางเดินอาหารส่วนบนย่อยสลาย" },
-    { chName: "ภูมิคุ้มกัน & โรคติดเชื้อ", q: "99. โรค Systemic Sclerosis (โรคหนังแข็ง) มีพยาธิสภาพเด่นชัดในข้อใด", options: ["ผิวหนังตึงแข็งและมีพังผืดแทรกในอวัยวะภายในอย่างกว้างขวาง", "มีตุ่มหนองกระจายทั่วตัว", "กระดูกหักง่าย", "เม็ดเลือดแดงแตกเฉียบพลัน"], correctIndex: 0, exp: "Systemic sclerosis เป็นโรคภูมิต้านทานตนเองที่มีการอักเสบเรื้อรังและสร้างพังผืดแทรกตามผิวหนังและอวัยวะภายใน" },
-    { chName: "บทนำพยาธิวิทยา", q: "100. การตรวจศพทางการแพทย์เพื่อศึกษาหาสาเหตุการเสียชีวิต เรียกว่าอะไร", options: ["Biopsy", "Autopsy (การชันสูตรพลิกศพ)", "Cytology", "Aspiration"], correctIndex: 1, exp: "Autopsy (Examination of the dead body) คือการตรวจสภาพศพเพื่อหาสาเหตุของการเสียชีวิตและพยาธิสภาพของโรค" }
-];
-
-let currentSetKey = 'set2';
-let activeQuestions = [];
-let userResponses = [];
-let totalScore = 0;
-
-// ฟังก์ชันสลับ Array แบบ Fisher-Yates
-function shuffle(array) {
-    let currentIndex = array.length, randomIndex;
-    while (currentIndex !== 0) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-        [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+    // --- ข้อ 61 - 100: ข้อสอบเสริมจากสไลด์เรียนให้ครบ 100 ข้อ ---
+    {
+        ch: "ch1",
+        group: "extra",
+        chName: "บทนำและเทคนิคพยาธิวิทยา",
+        q: "61. กล้องจุลทรรศน์ชนิดใดเหมาะสำหรับการตรวจดูภาพพื้นผิวของตัวอย่างในลักษณะ 3 มิติ",
+        options: ["Light microscope", "Scanning Electron Microscope (SEM)", "Transmission Electron Microscope (TEM)", "Phase contrast microscope"],
+        ans: 1,
+        exp: "SEM ใช้ลำแสงอิเล็กตรอนสแกนบนพื้นผิววัตถุ ทำให้มองเห็นภาพโครงสร้าง 3 มิติได้อย่างคมชัด"
+    },
+    {
+        ch: "ch2",
+        group: "extra",
+        chName: "การอักเสบ (Inflammation)",
+        q: "62. ข้อใดเป็นลักษณะเปรียบเทียบที่ถูกต้องระหว่าง Acute inflammation และ Chronic inflammation",
+        options: [
+            "Acute เริ่มมีอาการช้า กินเวลาเป็นเดือน",
+            "Acute มีเซลล์แทรกซึมเด่นคือ Neutrophils ส่วน Chronic มีเซลล์เด่นคือ Macrophages และ Lymphocytes",
+            "Chronic มีอาการบวมแดงร้อนเด่นชัดกว่า Acute",
+            "Acute ทำให้เกิดพังผืดมากกว่า Chronic"
+        ],
+        ans: 1,
+        exp: "Acute inflammation เกิดขึ้นเร็วและมี Neutrophil เป็นเซลล์เด่น ส่วน Chronic inflammation เกิดขึ้นช้า ดำเนินโรคนาน และมี Mononuclear cells (Macrophage/Lymphocyte) เป็นเซลล์เด่น"
+    },
+    {
+        ch: "ch3",
+        group: "extra",
+        chName: "Hemodynamics",
+        q: "63. ภาวะเลือดออกที่มีขนาดเส้นผ่านศูนย์กลาง 3 มิลลิเมตร ถึง 1 เซนติเมตร เรียกว่าอะไร",
+        options: ["Petechiae", "Purpura", "Ecchymosis", "Hematoma"],
+        ans: 1,
+        exp: "Purpura มีขนาดระหว่าง 3 มม. ถึง 1 ซม. (Petechiae < 3 มม. และ Ecchymosis > 1 ซม.)"
+    },
+    {
+        ch: "ch4",
+        group: "extra",
+        chName: "Cell Injury & Death",
+        q: "64. การเปลี่ยนแปลงทางนิวเคลียสที่นิวเคลียสละลายจางหายไปอย่างสมบูรณ์ เรียกว่าอะไร",
+        options: ["Pyknosis", "Karyorrhexis", "Karyolysis", "Apoptosis"],
+        ans: 2,
+        exp: "Karyolysis คือการที่ Chromatin และนิวเคลียสถูกเอนไซม์ย่อยสลายจนละลายจางหายไป"
+    },
+    {
+        ch: "ch4",
+        group: "extra",
+        chName: "Cell Injury & Death",
+        q: "65. ข้อใดเป็นตัวอย่างของ Programmed (Physiologic) apoptosis ตามธรรมชาติของร่างกาย",
+        options: [
+            "การลอกหลุดของเยื่อบุโพรงมดลูกในรอบประจำเดือน",
+            "การฝ่อของต่อมไทมัสเมื่อเข้าสู่วัยผู้ใหญ่",
+            "การสลายตัวของเซลล์ต่อมน้ำนมหลังหยุดให้นมบุตร",
+            "ถูกทุกข้อ"
+        ],
+        ans: 3,
+        exp: "ตัวอย่างสรีรวิทยาของ Apoptosis ได้แก่ การหลุดลอกของเยื่อบุมดลูกในรอบเดือน, การฝ่อของต่อมไทมัส และการยุบตัวของต่อมน้ำนมหลังหย่านม"
+    },
+    {
+        ch: "ch4",
+        group: "extra",
+        chName: "Cell Injury & Death",
+        q: "66. การตายแบบ Gangrene ชนิด Wet gangrene แตกต่างจาก Dry gangrene ในข้อใด",
+        options: [
+            "Wet gangrene มีการติดเชื้อแบคทีเรียแทรกซ้อน ทำให้เนื้อเยื่อบวม ชุ่ม และมีกลิ่นเหม็นเน่า",
+            "Wet gangrene เกิดจากการขาดเลือดโดยไม่มีเชื้อโรค",
+            "Dry gangrene มีลักษณะเป็นตุ่มน้ำใส",
+            "Wet gangrene พบเฉพาะที่สมอง"
+        ],
+        ans: 0,
+        exp: "Wet gangrene เกิดจากการที่เนื้อเยื่อขาดเลือดและมีแบคทีเรียเข้ามารุกราน ทำให้เกิดการเน่าเปื่อย บวมน้ำ และมีกลิ่นเหม็น"
+    },
+    {
+        ch: "ch5",
+        group: "extra",
+        chName: "Neoplasia & มะเร็ง",
+        q: "67. เนื้องอกไม่ร้ายแรง (Benign) ของเนื้อเยื่อกระดูก เรียกว่าอะไร",
+        options: ["Osteoma", "Osteosarcoma", "Chondroma", "Fibroma"],
+        ans: 0,
+        exp: "Osteoma คือเนื้องอกไม่ร้ายแรงของกระดูก (หากเป็นมะเร็งกระดูกจะเรียกว่า Osteosarcoma)"
+    },
+    {
+        ch: "ch5",
+        group: "extra",
+        chName: "Neoplasia & มะเร็ง",
+        q: "68. เนื้องอกของหลอดเลือดชนิดไม่ร้ายแรง เรียกว่าอะไร",
+        options: ["Angiosarcoma", "Hemangioma", "Lymphangioma", "Leiomyoma"],
+        ans: 1,
+        exp: "Hemangioma (หรือ Angioma) คือเนื้องอกหลอดเลือดชนิดไม่ร้ายแรง"
+    },
+    {
+        ch: "ch5",
+        group: "extra",
+        chName: "Neoplasia & มะเร็ง",
+        q: "69. เนื้องอกที่มีลักษณะเป็นถุงน้ำขนาดใหญ่และมีโครงสร้าง เช่น เส้นผม ไขมัน หรือฟันอยู่ภายใน คือข้อใด",
+        options: ["Adenoma", "Dermoid cyst (Cystadenoma / Teratoma)", "Polyp", "Papilloma"],
+        ans: 1,
+        exp: "Dermoid cyst (Cystadenoma) เป็นเนื้องอกถุงน้ำที่มักพบในรังไข่ มีองค์ประกอบของผิวหนัง เส้นผม และฟัน"
+    },
+    {
+        ch: "ch5",
+        group: "extra",
+        chName: "Neoplasia & มะเร็ง",
+        q: "70. ติ่งเนื้อที่ยื่นออกมาจากผนังเยื่อบุผิว เช่น ในลำไส้ใหญ่ เรียกว่าอะไร",
+        options: ["Ulcer", "Polyp", "Sarcoma", "Carcinoma"],
+        ans: 1,
+        exp: "Polyp คือก้อนเนื้อหรือติ่งเนื้อที่ยื่นนูนออกมาจากพื้นผิวเยื่อบุ"
+    },
+    {
+        ch: "ch5",
+        group: "extra",
+        chName: "Neoplasia & มะเร็ง",
+        q: "71. การแพร่กระจายของมะเร็งกลุ่ม Sarcoma มักแพร่กระจายผ่านทางเส้นทางใดเป็นหลัก",
+        options: ["ระบบน้ำเหลือง", "กระแสเลือด (Hematologic spread) โดยเฉพาะทางหลอดเลือดดำ", "ทางเดินอาหาร", "ระบบประสาท"],
+        ans: 1,
+        exp: "มะเร็งกลุ่ม Sarcoma (มะเร็งเนื้อเยื่อเกี่ยวพัน) มักรุกรานเข้าสู่หลอดเลือดดำและแพร่กระจายไปตามกระแสเลือดสู่อวัยวะ เช่น ปอดและตับ"
+    },
+    {
+        ch: "ch5",
+        group: "extra",
+        chName: "Neoplasia & มะเร็ง",
+        q: "72. ภาวะน้ำในช่องท้องที่เต็มไปด้วยสารเมือกจากมะเร็งรังไข่ที่แพร่กระจายในช่องท้อง เรียกว่าอะไร",
+        options: ["Ascites ธรรมดา", "Pseudomyxoma peritonei", "Peritonitis", "Hemoperitoneum"],
+        ans: 1,
+        exp: "Pseudomyxoma peritonei คือภาวะที่มีสารเมือกและเซลล์มะเร็งกระจายเต็มช่องเยื่อบุช่องท้อง"
+    },
+    {
+        ch: "ch6",
+        group: "extra",
+        chName: "สิ่งแวดล้อมและโภชนาการ",
+        q: "73. สารต้านอนุมูลอิสระ (Antioxidants) กลุ่มที่ละลายในไขมัน (Lipid-soluble) ได้แก่วิตามินข้อใด",
+        options: ["Vitamin B1 และ B2", "Vitamin C และ Glutathione", "Vitamin A, Vitamin E, Beta-carotene", "Uric acid"],
+        ans: 2,
+        exp: "สารต้านอนุมูลอิสระที่ละลายในไขมันได้แก่ Vitamin A, Vitamin E, Beta-carotene และ Lycopene"
+    },
+    {
+        ch: "ch6",
+        group: "extra",
+        chName: "สิ่งแวดล้อมและโภชนาการ",
+        q: "74. การขาดวิตามินดี (Vitamin D) ในผู้ใหญ่ทำให้เกิดภาวะกระดูกนิ่มและบาง เรียกว่าอะไร",
+        options: ["Rickets", "Osteomalacia", "Osteosarcoma", "Scurvy"],
+        ans: 1,
+        exp: "การขาดวิตามินดีในผู้ใหญ่เรียกว่า Osteomalacia ส่วนในเด็กเรียกว่า Rickets"
+    },
+    {
+        ch: "ch6",
+        group: "extra",
+        chName: "สิ่งแวดล้อมและโภชนาการ",
+        q: "75. โรคเหน็บชา (Beriberi) เกิดจากการขาดวิตามินชนิดใด",
+        options: ["Vitamin B1 (Thiamine)", "Vitamin B2 (Riboflavin)", "Vitamin B3 (Niacin)", "Vitamin C"],
+        ans: 0,
+        exp: "การขาด Vitamin B1 (Thiamine) ทำให้เกิดโรคเหน็บชา (Beriberi)"
+    },
+    {
+        ch: "ch6",
+        group: "extra",
+        chName: "สิ่งแวดล้อมและโภชนาการ",
+        q: "76. การขาดวิตามินบี 3 (Niacin) นำไปสู่โรคผิวหนังอักเสบ ท้องเสีย และสมองเสื่อม ที่รู้จักในชื่อโรคอะไร",
+        options: ["Scurvy", "Pellagra", "Rickets", "Night blindness"],
+        ans: 1,
+        exp: "การขาด Niacin ทำให้เกิดโรค Pellagra ซึ่งมีอาการเด่นคือ 3D: Dermatitis, Diarrhea, Dementia"
+    },
+    {
+        ch: "ch6",
+        group: "extra",
+        chName: "สิ่งแวดล้อมและโภชนาการ",
+        q: "77. เส้นสีฟ้าอมเทาที่ขอบเหงือก (Lead lines) สัมพันธ์กับภาวะพิษจากโลหะหนักชนิดใด",
+        options: ["Mercury", "Lead (สารตะกั่ว)", "Cadmium", "Arsenic"],
+        ans: 1,
+        exp: "Lead lines บนขอบเหงือกเกิดจากปฏิกิริยาของสารตะกั่วกับแบคทีเรียในช่องปาก เป็นลักษณะเฉพาะของ Lead poisoning"
+    },
+    {
+        ch: "ch6",
+        group: "extra",
+        chName: "สิ่งแวดล้อมและโภชนาการ",
+        q: "78. บาดแผลที่เกิดจากแรงกระแทกของวัตถุไม่มีคม ทำให้เนื้อเยื่อฉีกขาด ขอบแผลกะรุ่งกะริ่ง เรียกว่าอะไร",
+        options: ["Incised wound", "Laceration", "Abrasion", "Puncture wound"],
+        ans: 1,
+        exp: "Laceration คือแผลฉีกขาดจากวัตถุไม่มีคม มีขอบแผลไม่เรียบและกะรุ่งกะริ่ง"
+    },
+    {
+        ch: "ch6",
+        group: "extra",
+        chName: "สิ่งแวดล้อมและโภชนาการ",
+        q: "79. บาดแผลที่เกิดจากของมีคมบาด ขอบแผลเรียบกริบ เรียกว่าอะไร",
+        options: ["Abrasion", "Incised wound", "Laceration", "Contusion"],
+        ans: 1,
+        exp: "Incised wound คือบาดแผลตัดเรียบจากของมีคม เช่น มีดผ่าตัด"
+    },
+    {
+        ch: "ch6",
+        group: "extra",
+        chName: "สิ่งแวดล้อมและโภชนาการ",
+        q: "80. รอยถลอกของผิวหนังชั้นนอกที่เกิดจากการครูดหรือเสียดสี เรียกว่าอะไร",
+        options: ["Abrasion", "Contusion", "Laceration", "Puncture"],
+        ans: 0,
+        exp: "Abrasion คือแผลถลอกที่ผิวหนังชั้นกำพร้าหลุดลอกจากการเสียดสี"
+    },
+    {
+        ch: "ch7",
+        group: "extra",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "81. สิ่งมีชีวิตก่อโรคกลุ่มใดที่มีขนาดเล็กที่สุดและไม่มีสารพันธุกรรม",
+        options: ["Viruses", "Bacteria", "Prions", "Fungi"],
+        ans: 2,
+        exp: "Prion มีขนาดเล็กกว่า 20 นาโนเมตร และประกอบด้วยโปรตีนที่ผิดรูปโดยไม่มี DNA หรือ RNA"
+    },
+    {
+        ch: "ch7",
+        group: "extra",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "82. ไวรัสที่ติดเชื้อและแบ่งตัวเพิ่มจำนวนภายในเซลล์ของแบคทีเรีย เรียกว่าอะไร",
+        options: ["Retrovirus", "Bacteriophage", "Prion", "Plasmid"],
+        ans: 1,
+        exp: "Bacteriophage คือไวรัสที่ก่อการติดเชื้อและเพิ่มจำนวนในเซลล์แบคทีเรีย"
+    },
+    {
+        ch: "ch7",
+        group: "extra",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "83. ไวรัส SARS-CoV-2 เข้าสู่เซลล์เยื่อบุทางเดินหายใจของมนุษย์โดยการจับกับตัวรับชนิดใด",
+        options: ["CD4 receptor", "ACE2 receptor", "Insulin receptor", "Acetylcholine receptor"],
+        ans: 1,
+        exp: "SARS-CoV-2 ใช้ Spike protein จับกับตัวรับ ACE2 บนผิวเซลล์เยื่อบุทางเดินหายใจ"
+    },
+    {
+        ch: "ch7",
+        group: "extra",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "84. การตรวจพบ Ground-glass inclusion ในเซลล์ตับสัมพันธ์กับเชื้อไวรัสชนิดใด",
+        options: ["Hepatitis A", "Hepatitis B virus (HBV)", "Hepatitis C", "HIV"],
+        ans: 1,
+        exp: "Ground-glass hepatocytes เกิดจากการสะสมของ Hepatitis B surface antigen (HBsAg)"
+    },
+    {
+        ch: "ch7",
+        group: "extra",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "85. เชื้อแบคทีเรียชนิดใดเป็นสาเหตุของโรคกระเพาะอาหารและลำไส้อักเสบจากการรับประทานเนื้อสัตว์ปีกและไข่ที่ไม่สุก",
+        options: ["Salmonella spp.", "Vibrio cholerae", "Bacillus anthracis", "Clostridium botulinum"],
+        ans: 0,
+        exp: "Salmonella ปนเปื้อนในเนื้อสัตว์ปีกและไข่ดิบ ก่อให้เกิดอาการอาหารเป็นพิษ อุจจาระร่วง และปวดท้อง"
+    },
+    {
+        ch: "ch7",
+        group: "extra",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "86. สารพิษ Exotoxin ของ Clostridium botulinum มีผลต่อร่างกายอย่างไร",
+        options: ["ทำให้เม็ดเลือดแดงแตก", "เป็น Neurotoxin ยับยั้งการหลั่งสารสื่อประสาท ทำให้กล้ามเนื้อเป็นอัมพาตอ่อนปวกเปียก", "ทำลายท่อไต", "ทำให้เกิดตับแข็ง"],
+        ans: 1,
+        exp: "Botulinum toxin ยับยั้งการหลั่ง Acetylcholine ทำให้กล้ามเนื้อเป็นอัมพาตและนำมาประยุกต์ใช้ทำโบท็อกซ์ (Botox)"
+    },
+    {
+        ch: "ch7",
+        group: "extra",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "87. เชื้อราในกลุ่ม Dermatophytes เช่น ที่ก่อโรคน้ำกัดเท้า (Tinea pedis) ก่อโรคที่บริเวณใด",
+        options: ["อวัยวะภายใน", "ผิวหนังชั้นนอกและเคราติน", "กระแสเลือด", "สมอง"],
+        ans: 1,
+        exp: "Dermatophytes เป็นเชื้อราผิวหนังที่อาศัยเคราตินบนผิวหนัง เล็บ และเส้นผม"
+    },
+    {
+        ch: "ch7",
+        group: "extra",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "88. การติดเชื้อพยาธิชนิดใดที่ติดต่อผ่านการรับประทานปลาน้ำจืดเกล็ดขาวแบบสุก ๆ ดิบ ๆ",
+        options: ["พยาธิตัวตืด", "พยาธิใบไม้ตับ (Liver fluke)", "พยาธิปากขอ", "พยาธิเส้นด้าย"],
+        ans: 1,
+        exp: "พยาธิใบไม้ตับพบในปลาน้ำจืดมีเกล็ดในประเทศไทย เป็นสาเหตุสำคัญของโรคมะเร็งท่อน้ำดี"
+    },
+    {
+        ch: "ch7",
+        group: "extra",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "89. การติดเชื้อผ่านทางรกจากมารดาสู่ทารกในครรภ์ เรียกว่าการถ่ายทอดแบบใด",
+        options: ["Congenital / Transplacental transmission", "Airborne transmission", "Fomite transmission", "Direct contact"],
+        ans: 0,
+        exp: "Transplacental transmission คือการแพร่เชื้อผ่านรกจากแม่สู่ลูก เช่น หัดเยอรมัน และ HIV"
+    },
+    {
+        ch: "ch7",
+        group: "extra",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "90. การติดเชื้อทางอ้อมที่เกิดจากเครื่องมือทางการแพทย์ที่ไม่สะอาด เช่น การคาสายสวนปัสสาวะ เรียกว่าอะไร",
+        options: ["Airborne", "Fomite transmission", "Vector transmission", "Congenital"],
+        ans: 1,
+        exp: "Fomite คือสิ่งของหรือเครื่องมือที่ปนเปื้อนเชื้อโรคและนำพาเชื้อเข้าสู่ร่างกาย"
+    },
+    {
+        ch: "ch7",
+        group: "extra",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "91. การติดเชื้อที่แพร่กระจายไปทั่วร่างกายผ่านกระแสเลือดหรือน้ำเหลือง เรียกว่าอะไร",
+        options: ["Localized infection", "Disseminated / Systemic infection", "Latent infection", "Subclinical infection"],
+        ans: 1,
+        exp: "Systemic / Disseminated infection คือการติดเชื้อที่แพร่กระจายไปทั่วร่างกาย"
+    },
+    {
+        ch: "ch7",
+        group: "extra",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "92. ภาวะไฟลามทุ่ง (Erysipelas) ที่ผิวหนังชั้นหนังแท้ เกิดจากการติดเชื้อแบคทีเรียชนิดใด",
+        options: ["Streptococcus pyogenes", "Escherichia coli", "Vibrio cholerae", "Mycoplasma"],
+        ans: 0,
+        exp: "Streptococcus pyogenes เป็นสาเหตุสำคัญของ Erysipelas (ไฟลามทุ่ง) ที่ชั้น Dermis"
+    },
+    {
+        ch: "ch7",
+        group: "extra",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "93. การเจาะเลือดส่งตรวจ Hemoculture ควรปฏิบัติตามมาตรฐานสากลข้อใด",
+        options: ["เจาะเก็บเป็นลำดับแรกสุด (First order of draw) ด้วยเทคนิคปลอดเชื้อ", "เจาะเก็บหลังหลอด EDTA", "เขย่าหลอดแรงๆ", "เก็บเฉพาะเลือดดำส่วนปลาย"],
+        ans: 0,
+        exp: "Blood culture ต้องเจาะเป็นลำดับแรกเสมอเพื่อป้องกันการปนเปื้อนของเชื้อแบคทีเรียภายนอก"
+    },
+    {
+        ch: "ch7",
+        group: "extra",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "94. ภาวะเม็ดเลือดขาว Neutrophil ในกระแสเลือดเพิ่มจำนวนสูงขึ้นเพื่อตอบสนองต่อการติดเชื้อแบคทีเรีย เรียกว่าอะไร",
+        options: ["Neutropenia", "Neutrophilic leukocytosis", "Thrombocytopenia", "Eosinophilia"],
+        ans: 1,
+        exp: "Neutrophilic leukocytosis คือการเพิ่มจำนวนของ Neutrophils ในเลือดเพื่อต่อสู้กับการติดเชื้อ"
+    },
+    {
+        ch: "ch7",
+        group: "extra",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "95. การติดเชื้อฉวยโอกาสและมะเร็งทุติยภูมิที่พบบ่อยในผู้ป่วยระยะ AIDS คือข้อใด",
+        options: ["Kaposi sarcoma และ Pneumocystis pneumonia", "Osteosarcoma", "Melanoma", "Hepatoma"],
+        ans: 0,
+        exp: "ผู้ป่วย AIDS มักพบการติดเชื้อฉวยโอกาสและมะเร็ง Kaposi sarcoma จากการที่เซลล์ภูมิคุ้มกันถูกทำลาย"
+    },
+    {
+        ch: "ch3",
+        group: "extra",
+        chName: "Hemodynamics",
+        q: "96. ภาวะหลอดเลือดแดงโป่งพองแบบกระเปาะรอบเส้นรอบวง เรียกว่าอะไร",
+        options: ["Saccular aneurysm", "Fusiform aneurysm", "Dissecting aneurysm", "False aneurysm"],
+        ans: 1,
+        exp: "Fusiform aneurysm คือการโป่งพองออกสม่ำเสมอรอบเส้นรอบวงของหลอดเลือด"
+    },
+    {
+        ch: "ch3",
+        group: "extra",
+        chName: "Hemodynamics",
+        q: "97. การถ่ายอุจจาระเป็นเลือดสดหรือมีลิ่มเลือดปน มักบ่งชี้ถึงภาวะเลือดออกจากส่วนใด",
+        options: ["Upper GI bleeding", "Lower GI bleeding (Hematochezia)", "ทางเดินหายใจ", "กระเพาะปัสสาวะ"],
+        ans: 1,
+        exp: "Hematochezia คือการถ่ายอุจจาระเป็นเลือดสด มักมีสาเหตุมาจากเลือดออกในทางเดินอาหารส่วนล่าง"
+    },
+    {
+        ch: "ch3",
+        group: "extra",
+        chName: "Hemodynamics",
+        q: "98. การถ่ายอุจจาระเป็นสีดำเหนียวคล้ายยางมะตอย เรียกว่าอะไร",
+        options: ["Hematochezia", "Melena", "Hemoptysis", "Hematemesis"],
+        ans: 1,
+        exp: "Melena คืออุจจาระสีดำเข้มจากเลือดที่ถูกกรดและเอนไซม์ในทางเดินอาหารส่วนบนย่อยสลาย"
+    },
+    {
+        ch: "ch7",
+        group: "extra",
+        chName: "ภูมิคุ้มกัน & โรคติดเชื้อ",
+        q: "99. โรค Systemic Sclerosis (โรคหนังแข็ง) มีพยาธิสภาพเด่นชัดในข้อใด",
+        options: ["ผิวหนังตึงแข็งและมีพังผืดแทรกในอวัยวะภายในอย่างกว้างขวาง", "มีตุ่มหนองกระจายทั่วตัว", "กระดูกหักง่าย", "เม็ดเลือดแดงแตกเฉียบพลัน"],
+        ans: 0,
+        exp: "Systemic sclerosis เป็นโรคภูมิต้านทานตนเองที่มีการอักเสบเรื้อรังและสร้างพังผืดแทรกตามผิวหนังและอวัยวะภายใน"
+    },
+    {
+        ch: "ch1",
+        group: "extra",
+        chName: "บทนำและเทคนิคพยาธิวิทยา",
+        q: "100. การตรวจศพทางการแพทย์เพื่อศึกษาหาสาเหตุการเสียชีวิต เรียกว่าอะไร",
+        options: ["Biopsy", "Autopsy (การชันสูตรพลิกศพ)", "Cytology", "Aspiration"],
+        ans: 1,
+        exp: "Autopsy (Examination of the dead body) คือการตรวจสภาพศพเพื่อหาสาเหตุของการเสียชีวิตและพยาธิสภาพของโรค"
     }
-    return array;
-}
+];
 
-// เตรียมชุดคำถามและสลับช้อยส์
-function prepareQuestions(rawList) {
-    return rawList.map(item => {
-        const originalOptions = item.options.map((opt, idx) => ({
-            text: opt,
-            isCorrect: (idx === item.correctIndex)
-        }));
-        
-        // สุ่มสลับตัวเลือก
-        const shuffledOptions = shuffle([...originalOptions]);
-        const newCorrectIndex = shuffledOptions.findIndex(o => o.isCorrect);
-
-        return {
-            chName: item.chName,
-            q: item.q,
-            options: shuffledOptions.map(o => o.text),
-            ans: newCorrectIndex,
-            exp: item.exp
-        };
-    });
-}
-
-function initExam(setKey) {
-    currentSetKey = setKey;
-    const rawData = (setKey === 'set2') ? rawSet2 : rawSet1;
-    
-    // สุ่มสลับตัวเลือกของทุกข้อ
-    activeQuestions = prepareQuestions(rawData);
-    userResponses = new Array(activeQuestions.length).fill(null);
-    totalScore = 0;
-
-    document.getElementById('total-q-count').innerText = activeQuestions.length;
-    document.getElementById('finish-btn').style.display = 'block';
-    document.getElementById('summary-card').style.display = 'none';
-
-    renderQuestions();
-    refreshStats();
-}
+let userResponses = new Array(examDatabase.length).fill(null);
+let totalScore = 0;
+let currentFilter = 'all';
 
 function renderQuestions() {
     const listContainer = document.getElementById('questions-list');
     listContainer.innerHTML = '';
 
-    activeQuestions.forEach((item, index) => {
+    examDatabase.forEach((item, index) => {
+        let isHidden = false;
+        if (currentFilter === 'core') {
+            isHidden = (item.group !== 'core');
+        } else if (currentFilter !== 'all') {
+            isHidden = (item.ch !== currentFilter);
+        }
+
         const card = document.createElement('div');
         card.className = 'question-card';
         card.id = `card-${index}`;
+        if (isHidden) card.style.display = 'none';
 
         const header = document.createElement('div');
         header.className = 'card-header';
         header.innerHTML = `
             <span class="chapter-badge">${item.chName}</span>
-            <span class="q-index">ข้อที่ ${index + 1} / ${activeQuestions.length}</span>
+            <span class="q-index">ข้อที่ ${index + 1} / 100</span>
         `;
 
         const title = document.createElement('div');
@@ -593,7 +1622,7 @@ function handleSelection(qIdx, selectedOpt) {
     if (userResponses[qIdx] !== null) return;
 
     userResponses[qIdx] = selectedOpt;
-    const qData = activeQuestions[qIdx];
+    const qData = examDatabase[qIdx];
     const isCorrect = (selectedOpt === qData.ans);
 
     if (isCorrect) totalScore++;
@@ -616,85 +1645,55 @@ function refreshStats() {
     const answeredCount = userResponses.filter(r => r !== null).length;
     document.getElementById('ans-count').innerText = answeredCount;
     document.getElementById('score-count').innerText = totalScore;
-    document.getElementById('progress-fill').style.width = `${(answeredCount / activeQuestions.length) * 100}%`;
+    document.getElementById('progress-fill').style.width = `${(answeredCount / examDatabase.length) * 100}%`;
 }
 
-function switchSet(setKey) {
-    document.querySelectorAll('.set-btn').forEach(btn => btn.classList.remove('active'));
-    if (setKey === 'set2') document.getElementById('btn-set-2').classList.add('active');
-    else document.getElementById('btn-set-1').classList.add('active');
-
-    initExam(setKey);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function restartCurrentSet() {
-    initExam(currentSetKey);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function filterSet(key, btnElement) {
+function filterChapter(chKey, btnElement) {
+    currentFilter = chKey;
     document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
     btnElement.classList.add('active');
 
-    if (key === 'set1') {
-        switchSet('set1');
-    } else if (key === 'set2') {
-        switchSet('set2');
-    } else {
-        activeQuestions.forEach((item, index) => {
-            const card = document.getElementById(`card-${index}`);
-            let show = false;
-            if (key === 'all') show = true;
-            else if (key === 'ch1' && item.chName.includes("บทนำ")) show = true;
-            else if (key === 'ch2' && item.chName.includes("การอักเสบ")) show = true;
-            else if (key === 'ch3' && item.chName.includes("Hemodynamics")) show = true;
-            else if (key === 'ch4' && item.chName.includes("Cell Injury")) show = true;
-            else if (key === 'ch5' && item.chName.includes("Neoplasia")) show = true;
-            else if (key === 'ch6' && item.chName.includes("สิ่งแวดล้อม")) show = true;
-            else if (key === 'ch7' && item.chName.includes("ภูมิคุ้มกัน")) show = true;
-            
-            card.style.display = show ? 'block' : 'none';
-        });
-    }
+    examDatabase.forEach((item, index) => {
+        const card = document.getElementById(`card-${index}`);
+        let show = false;
+        if (chKey === 'all') {
+            show = true;
+        } else if (chKey === 'core') {
+            show = (item.group === 'core');
+        } else {
+            show = (item.ch === chKey);
+        }
+        card.style.display = show ? 'block' : 'none';
+    });
 }
 
 function submitExam() {
-    const total = activeQuestions.length;
     const answered = userResponses.filter(r => r !== null).length;
-    if (answered < total) {
-        if (!confirm(`คุณทำข้อสอบไปแล้ว ${answered}/${total} ข้อ ต้องการส่งข้อสอบและดูสรุปคะแนนเลยหรือไม่?`)) {
+    if (answered < examDatabase.length) {
+        if (!confirm(`คุณทำข้อสอบไปแล้ว ${answered}/100 ข้อ ต้องการส่งข้อสอบและตรวจผลเลยหรือไม่?`)) {
             return;
         }
     }
-
-    const wrongCount = answered - totalScore;
-    const pct = Math.round((totalScore / total) * 100);
 
     document.getElementById('finish-btn').style.display = 'none';
     const summary = document.getElementById('summary-card');
     summary.style.display = 'block';
 
-    document.getElementById('summary-title').innerText = (currentSetKey === 'set2') 
-        ? "🎉 สรุปผล: ชุดที่ 2 (แนวข้อสอบ 60 ข้อ)" 
-        : "🎉 สรุปผล: ชุดที่ 1 (คลังข้อสอบ 100 ข้อ)";
-
-    document.getElementById('sum-correct').innerText = `${totalScore} ข้อ`;
-    document.getElementById('sum-wrong').innerText = `${wrongCount} ข้อ`;
-    document.getElementById('sum-total').innerText = `${pct}%`;
+    document.getElementById('score-percent').innerText = `${totalScore} / 100 คะแนน`;
 
     let feedback = "";
-    if (pct >= 80) feedback = "ยอดเยี่ยมมากครับ! คุณมีความรู้ความเข้าใจในวิชาพยาธิวิทยาเป็นอย่างดี พร้อมสอบจริงได้คะแนนสูงแน่นอนครับ";
-    else if (pct >= 60) feedback = "ผ่านเกณฑ์ระดับดีครับ! ลองกดปุ่มเริ่มใหม่เพื่อสุ่มช้อยส์ฝึกทำซ้ำจนคล่องแคล่ว 100% ครับ";
-    else feedback = "แนะนำให้ทบทวนข้อที่ตอบผิดอีกครั้ง แล้วลองสุ่มทำใหม่เพื่อเพิ่มความแม่นยำนะครับ สู้ๆ ครับ!";
+    const pct = (totalScore / examDatabase.length) * 100;
+    if (pct >= 80) feedback = "ยอดเยี่ยมมากครับ! คุณมีความรู้ความเข้าใจในวิชาพยาธิวิทยาเป็นอย่างดี พร้อมลุยสอบจริงแล้วครับ";
+    else if (pct >= 60) feedback = "ผ่านเกณฑ์ระดับดีครับ! ลองกดทบทวนข้อที่ตอบผิดอีกรอบเพื่อความแม่นยำเต็มที่ครับ";
+    else feedback = "แนะนำให้กลับไปทบทวนสไลด์ตามหัวข้อที่ตอบผิด แล้วลองทำใหม่อีกครั้งนะครับ สู้ๆ ครับ!";
 
     document.getElementById('feedback-text').innerText = feedback;
     summary.scrollIntoView({ behavior: 'smooth' });
 }
 
-// เริ่มต้นโหลดชุดที่ 2 (60 ข้อ) ทันที
 window.onload = () => {
-    initExam('set2');
+    renderQuestions();
+    refreshStats();
 };
 </script>
 
